@@ -1,0 +1,45 @@
+# Visual Studio local files
+.vs/**
+.vscode/**
+
+# Build files
+build/**
+.cache/**
+out/**
+
+# Local-only files
+CMakeFiles/**
+CMakeUserPresets.json
+CMakeSettings.json
+CMakeCache.txt
+CMakePresets.json
+cmake_install.cmake
+src/Makefile
+src/CMakeFiles/**
+dependencies/src/CMakeFiles/**
+src/cmake_install.cmake
+vcpkg.json
+.clangd
+.ccls-root
+.ccls-cache
+compile_commands.json
+imgui.ini
+
+# Temp files 
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
