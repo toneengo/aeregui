@@ -2,7 +2,6 @@
 
 #include <string>
 #include <memory>
-#include "glm/glm.hpp"
 #include <vector>
 #include <unordered_map>
 
@@ -14,13 +13,49 @@
     #define NAMESPACE_END(name) }
 #endif
 
+#define DEFINE_VEC(name, type, size) 
+
 NAMESPACE_BEGIN(AereGui)
+
+struct vec4 {
+    union {
+        struct {
+            float x;
+            float y;
+            float w;
+            float z;
+        };
+        float arr[4];
+    };
+};
+
+struct ivec2 {
+    union {
+        struct {
+            int32_t x;
+            int32_t y;
+        };
+        int32_t arr[2];
+    };
+};
+typedef struct ivec2 ivec2;
+
+struct vec2 {
+    union {
+        struct {
+            float x;
+            float y;
+        };
+        float arr[2];
+    };
+};
+typedef struct vec2 vec2;
 
 // each character's rendering information to put in the buffer
 struct alignas(16) Character
 {
-    glm::vec4 vector; //xpos, ypos, width, height
-    glm::vec4 col;
+    vec4 vector; //xpos, ypos, width, height
+    vec4 col;
     int layer;
     float scale;
 };
@@ -29,8 +64,8 @@ struct alignas(16) Character
 struct CharInfo
 {
     int layer;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
+    ivec2 size;
+    ivec2 bearing;
     unsigned int advance;
 };
 
@@ -58,24 +93,24 @@ class GuiHelper
         void clear();
 
         // functions for GLFW callbacks.
-        void setMousePos(glm::vec2 pos);
-        void setScreenSz(glm::ivec2 size);
+        void setMousePos(vec2 pos);
+        void setScreenSz(ivec2 size);
 
         // Adds a text object.
         void addText(const char* text,
-                     glm::vec2 pos, float scale, glm::vec4 col, bool center);
+                     vec2 pos, float scale, vec4 col, bool center);
 
         // Adds a clickable text object.
         void addTextButton(const char* text, void(*f)(),
-                           glm::vec2 pos, float scale, glm::vec4 col, bool center);
+                           vec2 pos, float scale, vec4 col, bool center);
     private:
         // Render data. Holds all GUI elements in GPU-friendly form.
         struct {
             std::vector<AereGui::Character> text;
         } data;
 
-        glm::vec2 mousePos;
-        glm::ivec2 screenSz;
+        vec2 mousePos;
+        ivec2 screenSz;
 
         // Buffer name/Buffer binding pair
         struct nameIdx
