@@ -1,21 +1,21 @@
+#define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
-
 #include "glad/glad.h"
-#include "aeregui.h"
+#include "shader.h"
 
 using namespace AereGui;
 
-void gShader::use()
+void Shader::use()
 {
     glUseProgram(id);
 }
 
-uint32_t gShader::getLocation(const char * uniform_name)
+uint32_t Shader::getLocation(const char * uniform_name)
 {
     return shgets(uniforms, uniform_name).value.location;
 }
 
-void AereGui::createShader(gShader* shader, const std::string& vertexShader, const std::string& fragmentShader)
+void AereGui::createShader(Shader* shader, const std::string& vertexShader, const std::string& fragmentShader)
 {
     sh_new_arena(shader->uniforms);
 

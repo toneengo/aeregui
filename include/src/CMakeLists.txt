@@ -8,3 +8,7 @@ file(GLOB_RECURSE src_f CONFIGURE_DEPENDS
 target_sources(aeregui PRIVATE
     ${src_f}
 )
+
+target_sources(example1 PRIVATE
+    ${src_f}
+)

@@ -9,7 +9,7 @@ inline const std::string VERSION_HEADER = R"#(
 #version 460 core
 )#";
 
-inline const std::string TEXTBUF = R"#(
+inline const std::string BUFFERS = R"#(
 struct Character {
     vec4 vector;
     vec4 col;
@@ -17,19 +17,17 @@ struct Character {
     float scale;
 };
 
-layout (std430, binding = @) buffer textBuf {
+layout (std430, binding = 1) buffer textBuf {
     Character text[];
 };
-)#";
 
-inline const std::string SCREENSZBUF = R"#(
-layout (std140, binding = @) uniform screenSzBuf {
+layout (std140, binding = 2) uniform screenSzBuf {
     ivec2 screenSz;
 };
-)#";
 
-inline const std::string FONTTEXTURE = R"#(
-layout (binding = @) uniform sampler2DArray font;
+layout (std140, binding = 3) uniform widgetPosBuf {
+    vec2 widgetPos;
+};
 )#";
 
 inline const std::string TEXTVERT = R"#(
@@ -62,7 +60,7 @@ void main() {
     colour = text[gl_InstanceID].col;
 
     vec2 size = texBounds.zw / vec2(screenSz.x/2.0, screenSz.y/2.0) * scale;
-    vec2 pos = quad[gl_VertexID] * size + texBounds.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
+    vec2 pos = quad[gl_VertexID] * size + texBounds.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
@@ -73,9 +71,14 @@ flat in vec4 colour;
 flat in int layer;
 out vec4 frag;
 
+layout (binding = 0) uniform sampler2DArray font;
+
 void main() {
     frag = vec4(1.0, 1.0, 1.0, texture(font, vec3(uv, layer)).r);
     frag *= colour;
+
+    if (frag.a < 0.1)
+        discard;
 }
 )#";
 

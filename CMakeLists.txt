@@ -15,25 +15,36 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project("aeregui")
 
 add_library(aeregui)
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "aeregui")
+add_executable(example1)
+
+add_dependencies(example1 aeregui)
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(aeregui PRIVATE OpenGL::GL)
-
 find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(aeregui PRIVATE glfw)
-
 find_package(Freetype REQUIRED)
-target_link_libraries(aeregui PRIVATE Freetype::Freetype)
-
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(aeregui PRIVATE glm::glm)
 
 add_subdirectory(src)
 add_subdirectory(include/src)
 
-target_include_directories(aeregui PRIVATE "include/")
-target_include_directories(aeregui PRIVATE "resources/")
-target_include_directories(aeregui PRIVATE "src/")
+foreach(TARGET aeregui example1)
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT}")
 
-#add_dependencies(aeregui assets)
+    target_link_libraries(${TARGET} PRIVATE OpenGL::GL)
+    target_link_libraries(${TARGET} PRIVATE glfw)
+    target_link_libraries(${TARGET} PRIVATE Freetype::Freetype)
+    target_link_libraries(${TARGET} PRIVATE glm::glm)
+
+    target_include_directories(${TARGET} PRIVATE "include/")
+    target_include_directories(${TARGET} PRIVATE "resources/")
+    target_include_directories(${TARGET} PRIVATE "src/")
+endforeach(TARGET)
+
+target_link_directories(example1 PRIVATE ${CMAKE_BINARY_DIR})
+target_link_libraries(example1 PRIVATE aeregui)
+
+add_custom_target(resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR}/resources
+)
+
+add_dependencies(example1 resources)
