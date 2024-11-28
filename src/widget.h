@@ -13,7 +13,17 @@ public:
     Widget();
     virtual void draw(GLContext* ctx);
     void setPos(glm::vec2 pos);
-    virtual void addWidget(Widget * widget);
+
+    virtual void addChild(Widget * widget);
+
+    Widget* findWidget(glm::vec2 pos);
+    bool contains(glm::vec2 pos);
+    bool visible() { return m_visible; };
+
+    void assignTexture(std::string tex);
+
+    virtual void onMouseDownEvent(int button, int action) {};
+    virtual void onMouseEnterEvent(bool enter) {};
 
 protected:
     Widget* m_parent;
@@ -21,9 +31,34 @@ protected:
     RenderData m_render_data;
 
     bool m_visible;
-    glm::vec2 m_pos;
 
-    float m_font_scale;
+    bool m_last_hovered;
+    bool m_hovered;
+
+    bool m_pressed;
+    
+    int m_texture_tl;
+    int m_texture_tc;
+    int m_texture_tr;
+
+    int m_texture_l;
+    int m_texture_c;
+    int m_texture_r;
+
+    int m_texture_bl;
+    int m_texture_bc;
+    int m_texture_br;
+
+    bool m_has_hover_texture;
+    bool m_has_press_texture;
+    glm::vec4 m_texture_bounds;
+
+    glm::vec2 m_pos;
+    glm::vec2 m_size;
+
+    glm::vec4 m_text_color;
+    float m_text_scale;
+    bool m_center;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END();

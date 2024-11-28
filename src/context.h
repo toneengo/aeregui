@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "GLFW/glfw3.h"
 #include "common.h"
 #include "shader.h"
@@ -18,6 +18,8 @@ class UIContext
 {
 public:
     UIContext(GLFWwindow* window);
+    ~UIContext();
+
     // Renders all GUI elements in 'data'.
     void render();
 
@@ -27,6 +29,8 @@ public:
     void addWidget(Widget* widget);
 
     void loadFont(const char* font);
+    Screen* screenPtr() { return m_screen; };
+    void preloadTextures(const char* dir);
 private:
     Screen* m_screen;
     GLContext* m_gl_context;
@@ -36,13 +40,19 @@ class GLContext
 {
 public:
     GLContext(GLFWwindow* window);
+    ~GLContext();
     void drawFromRenderData(const RenderData& data);
     void bindBuffers();
     void setWidgetPos(glm::vec2 pos);
-    void setScreenSize(glm::ivec2 size);
+
+    void setScreenSize(int width, int height);
+    glm::ivec2 getScreenSize() { return m_screen_size; };
+
     void loadFont(const char* font);
+    void preloadTextures(const char* dir);
 
     void drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center);
+    void drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool center);
     void drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col);
 private:
     // Buffer name/Buffer binding pair
@@ -69,6 +79,7 @@ private:
     // Texture arrays
     struct
     {
+        nameIdx texture;
         nameIdx font;
     } m_ta;
 
@@ -79,8 +90,13 @@ private:
     } m_shaders;
 
     float fontPx;
+    glm::ivec2 m_screen_size;
 
-    std::unordered_map<char, AereGui::CharInfo> charMap;
+    int m_pixel_size = 4;
+
+    int m_font_height;
+
+    std::unordered_map<char, AereGui::CharInfo> m_char_map;
 };
 
 NAMESPACE_END(AereGui);

@@ -1,6 +1,6 @@
 #include "aeregui.h"
 #include "GLFW/glfw3.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "stdio.h"
 
 GLFWwindow* window;
@@ -8,7 +8,7 @@ using namespace AereGui;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    //glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);
 }
 
 void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param)
@@ -19,6 +19,7 @@ void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GL
 int SCR_WIDTH;
 int SCR_HEIGHT;
 
+Screen* screen;
 int main()
 {
 
@@ -42,7 +43,7 @@ int main()
 
     // Load OpenGL
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     glfwGetWindowSize(window, &SCR_WIDTH, &SCR_HEIGHT);
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -55,15 +56,53 @@ int main()
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
     UIContext uictx(window);
-    uictx.loadFont("resources/fonts/arial.ttf");
-    Widget * button = new Button();
+    uictx.loadFont("resources/fonts/unifont.ttf");
+    uictx.preloadTextures("resources/sprites");
+
+    Widget * button = new Button("play now!!!!", []()
+        {
+            printf("button pressed!!\n");
+        }
+    );
+    button->assignTexture("button");
+    button->setPos({0, 0});
     uictx.addWidget(button);
+
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+
+    screen = uictx.screenPtr();
+    glfwSetFramebufferSizeCallback(window,
+        [](GLFWwindow* window, int width, int height)
+        {
+            screen->framebufferSizeCallback(width, height);
+        }
+    );
+
+    glfwSetCursorPosCallback(window,
+        [](GLFWwindow* window, double x, double y)
+        {
+            screen->cursorPosCallback(x, y);
+        }
+    );
+
+    glfwSetMouseButtonCallback(window,
+        [](GLFWwindow* window, int button, int action, int mods)
+        {
+            screen->mouseButtonCallback(button, action);
+        }
+    );
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
         uictx.render();
         glfwSwapBuffers(window);
     }

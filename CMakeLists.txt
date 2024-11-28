@@ -17,7 +17,6 @@ project("aeregui")
 add_library(aeregui)
 add_executable(example1)
 
-add_dependencies(example1 aeregui)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
@@ -47,4 +46,5 @@ add_custom_target(resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR}/resources
 )
 
+add_dependencies(example1 aeregui)
 add_dependencies(example1 resources)

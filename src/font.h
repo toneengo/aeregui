@@ -15,7 +15,8 @@ struct alignas(16) Character
 struct alignas(16) Quad
 {
     glm::vec4 vector; //xpos, ypos, width, height
-    int texID;
+    glm::vec4 texBounds; //xpos, ypos, width, height
+    int layer;
 };
 
 // font information
@@ -25,6 +26,33 @@ struct CharInfo
     glm::ivec2 size;
     glm::ivec2 bearing;
     unsigned int advance;
+};
+
+struct TexEntry
+{
+    int layer;
+
+    bool hover;
+    bool press;
+
+    bool tl;
+    bool tc;
+    bool tr;
+    bool l;
+    bool c;
+    bool r;
+    bool bl;
+    bool bc;
+    bool br;
+
+    int x;
+    int y;
+    int width;
+    int height;
+
+    unsigned char* data;
+    unsigned char* _hover;
+    unsigned char* _press;
 };
 
 struct RenderData {

@@ -1,6 +1,6 @@
 #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "shader.h"
 
 using namespace AereGui;
