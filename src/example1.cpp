@@ -65,8 +65,12 @@ int main()
         }
     );
     button->assignTexture("button");
-    button->setPos({0, 0});
+    button->setPos({200, 200});
     uictx.addWidget(button);
+
+    Widget * input = new TextInput("Enter text here :-)");
+    input->assignTexture("textinput");
+    uictx.addWidget(input);
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -94,6 +98,20 @@ int main()
         [](GLFWwindow* window, int button, int action, int mods)
         {
             screen->mouseButtonCallback(button, action);
+        }
+    );
+
+    glfwSetKeyCallback(window,
+        [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            screen->keyCallback(key, scancode, action, mods);
+        }
+    );
+
+    glfwSetCharCallback(window,
+        [](GLFWwindow* window, unsigned int codepoint)
+        {
+            screen->charCallback(codepoint);
         }
     );
 

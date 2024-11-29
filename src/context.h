@@ -51,7 +51,7 @@ public:
     void loadFont(const char* font);
     void preloadTextures(const char* dir);
 
-    void drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center);
+    int drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center);
     void drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool center);
     void drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col);
 private:
@@ -92,7 +92,7 @@ private:
     float fontPx;
     glm::ivec2 m_screen_size;
 
-    int m_pixel_size = 4;
+    int m_pixel_size = 2;
 
     int m_font_height;
 

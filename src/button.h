@@ -18,6 +18,8 @@ public:
 protected:
     std::string m_label;
     _AEREGUI_FN_PTR m_function;
+
+    glm::vec2 m_pressed_offset;
 };
 
 NAMESPACE_END(AereGui);

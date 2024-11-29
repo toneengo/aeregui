@@ -130,7 +130,7 @@ void GLContext::setScreenSize(int width, int height)
     glNamedBufferSubData(m_ub.screen_size.buf, 0, sizeof(int) * 2, glm::value_ptr(m_screen_size));
 }
 
-void GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center)
+int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center)
 {
     size_t numchars = strlen(text);
     Character buf[128];
@@ -143,7 +143,7 @@ void GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4
             currx += (m_char_map[text[idx]].advance >> 6) * scale;
         }
         pos.x -= currx / 2.0;
-        pos.y -= m_font_height / 2.0;
+        pos.y -= m_font_height / 2.0 * scale;
     }
 
     currx = pos.x;
@@ -170,6 +170,8 @@ void GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4
     bindBuffers();
     glNamedBufferSubData(m_ssb.text.buf, 0, sizeof(Character) * numchars, buf);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, numchars);
+
+    return currx;
 }
 
 void GLContext::drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool center)
@@ -298,6 +300,7 @@ void GLContext::preloadTextures(const char* dir)
         std::string pstr = f.path().string();
         std::string fstr = f.path().filename().string();
         fstr.erase(fstr.begin() + fstr.find('.'), fstr.end());
+        printf("laod %s \n", pstr.c_str());
 
         if (!pstr.ends_with(".png"))
         {
@@ -337,6 +340,11 @@ void GLContext::preloadTextures(const char* dir)
             m_tex_map[fstr]._press = im;
             m_tex_map[fstr].press = true;
         }
+        else if (pstr.ends_with(".active.png"))
+        {
+            m_tex_map[fstr]._active = im;
+            m_tex_map[fstr].active = true;
+        }
         else
         {
             m_tex_map[fstr].data = im;
@@ -368,20 +376,22 @@ void GLContext::preloadTextures(const char* dir)
     unsigned char* atlas = new unsigned char[ATLAS_SIZE * ATLAS_SIZE * 4];
     unsigned char* hover = new unsigned char[ATLAS_SIZE * ATLAS_SIZE * 4];
     unsigned char* press = new unsigned char[ATLAS_SIZE * ATLAS_SIZE * 4];
+    unsigned char* active = new unsigned char[ATLAS_SIZE * ATLAS_SIZE * 4];
     memset(atlas, 0, ATLAS_SIZE * ATLAS_SIZE * 4);
     memset(hover, 0, ATLAS_SIZE * ATLAS_SIZE * 4);
     memset(press, 0, ATLAS_SIZE * ATLAS_SIZE * 4);
+    memset(active, 0, ATLAS_SIZE * ATLAS_SIZE * 4);
 
     i = 0;
     for (auto& p : m_tex_map)
     {
+        printf("huhh %s \n", p.first.c_str());
         TexEntry& e = p.second;
-        stbrp_rect& rect = boxes[i];
+        stbrp_rect& rect = boxes[i++];
         // Copy the sprite data into the big chunga
         // Scanline copy
         if (e.data == nullptr)
         {
-            printf("huhh %s \n", p.first.c_str());
             continue;
         }
 
@@ -399,6 +409,9 @@ void GLContext::preloadTextures(const char* dir)
             for (int row = 0; row < e.height; row++)
                 memcpy(press + 4 * tc(rect.x, rect.y + row), e._press + (4 * e.width * row), e.width * 4);
 
+        if (e._active != nullptr)
+            for (int row = 0; row < e.height; row++)
+                memcpy(active + 4 * tc(rect.x, rect.y + row), e._active + (4 * e.width * row), e.width * 4);
     }
 
     if(!stbi_write_png("resources/atlas.png", ATLAS_SIZE, ATLAS_SIZE, 4, atlas, 4 * ATLAS_SIZE))
@@ -419,16 +432,24 @@ void GLContext::preloadTextures(const char* dir)
         exit(1);
     }
 
+    if(!stbi_write_png("resources/active.png", ATLAS_SIZE, ATLAS_SIZE, 4, active, 4 * ATLAS_SIZE))
+    {
+        std::cout << "Failed to write out atlas image\n";
+        exit(1);
+    }
+
     glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_ta.texture.buf);
     glTextureStorage3D(m_ta.texture.buf, 1, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, 128);
 
     glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 0, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
     glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 1, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, hover);
     glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 2, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, press);
+    glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 3, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, active);
 
     delete [] atlas;
     delete [] hover;
     delete [] press;
+    delete [] active;
 
     glTextureParameteri(m_ta.texture.buf, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
     glTextureParameteri(m_ta.texture.buf, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -440,5 +461,6 @@ void GLContext::preloadTextures(const char* dir)
         stbi_image_free(e.second.data);
         stbi_image_free(e.second._hover);
         stbi_image_free(e.second._press);
+        stbi_image_free(e.second._active);
     }
 }

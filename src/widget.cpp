@@ -1,18 +1,12 @@
 #include "widget.h"
 
-const int PIXEL_SIZE = 4;
+const int PIXEL_SIZE = 2;
 using namespace AereGui;
 Widget::Widget()
     : m_visible(true), m_pos({0, 0}), m_text_color(glm::vec4(1.0)),
       m_text_scale(1.0), m_center(false),
-      m_last_hovered(false), m_hovered(false), m_pressed(false)
+      m_hovered(false), m_pressed(false)
 {
-}
-
-void Widget::setPos(glm::vec2 pos)
-{
-    m_pos = pos;
-    return;
 }
 
 void Widget::draw(GLContext* ctx)

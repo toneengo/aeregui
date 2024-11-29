@@ -107,7 +107,7 @@ void main() {
     ); 
 
     int ATLAS_SIZE = 512;
-    int pixelSz = 4;
+    int pixelSz = 2;
     vec4 rect = quads[gl_InstanceID].vector;
     vec4 texBounds = quads[gl_InstanceID].texBounds;
 

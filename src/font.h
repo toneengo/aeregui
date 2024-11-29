@@ -34,6 +34,7 @@ struct TexEntry
 
     bool hover;
     bool press;
+    bool active;
 
     bool tl;
     bool tc;
@@ -53,6 +54,7 @@ struct TexEntry
     unsigned char* data;
     unsigned char* _hover;
     unsigned char* _press;
+    unsigned char* _active;
 };
 
 struct RenderData {

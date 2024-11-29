@@ -5,3 +5,4 @@
 #include "context.h"
 #include "widget.h"
 #include "screen.h"
+#include "textinput.h"
