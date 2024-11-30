@@ -36,15 +36,10 @@ struct TexEntry
     bool press;
     bool active;
 
-    bool tl;
-    bool tc;
-    bool tr;
-    bool l;
-    bool c;
-    bool r;
-    bool bl;
-    bool bc;
-    bool br;
+    float top;
+    float right;
+    float bottom;
+    float left;
 
     int x;
     int y;

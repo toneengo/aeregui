@@ -113,12 +113,99 @@ void main() {
 
     uv = quad[gl_VertexID];
 
-    uv = vec2(texBounds.x, texBounds.y + texBounds.w) / ATLAS_SIZE +
+    uv = vec2(texBounds.x, texBounds.y) / ATLAS_SIZE +
          uv * (vec2(texBounds.z, -texBounds.w)) / ATLAS_SIZE;
 
     layer = quads[gl_InstanceID].layer;
 
     vec2 size = (texBounds.zw * pixelSz) / vec2(screenSz.x/2.0, screenSz.y/2.0);
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    gl_Position = vec4(pos, 0.0, 1.0);
+}
+)#";
+
+inline const std::string QUAD9SLICEVERT = R"#(
+out vec2 uv;
+flat out int layer;
+
+struct Slices
+{
+    float top;
+    float right;
+    float bottom;
+    float left;
+};
+
+uniform vec4 slices;
+
+void main() {
+    ivec2 quad[6] = ivec2[6](
+        ivec2(0, 0),
+        ivec2(1, 0),
+        ivec2(0, 1),
+        ivec2(1, 1),
+        ivec2(0, 1),
+        ivec2(1, 0)
+    ); 
+
+    int ATLAS_SIZE = 512;
+    int pixelSz = 2;
+    vec4 rect = quads[gl_InstanceID / 9].vector;
+    vec4 texBounds = quads[gl_InstanceID / 9].texBounds;
+
+    float top = slices.x;
+    float right = slices.y;
+    float bottom = slices.z;
+    float left = slices.w;
+
+    if (gl_InstanceID % 3 == 0)
+    {
+        rect.z = left * 2;
+        texBounds.z = left;
+    }
+    else if (gl_InstanceID % 3 == 1)
+    {
+        rect.x += left * 2;
+        rect.z -= (left + right) * 2;
+        texBounds.x += left;
+        texBounds.z -= left + right;
+    }
+    else if (gl_InstanceID % 3 == 2)
+    {
+        rect.x += rect.z - right * 2;
+        rect.z = right * 2;
+        texBounds.x += texBounds.z - right; 
+        texBounds.z = right;
+    }
+
+    if (gl_InstanceID / 3 == 0)
+    {
+        rect.w = bottom * 2;
+        texBounds.w = bottom;
+    }
+    else if (gl_InstanceID / 3 == 1)
+    {
+        rect.y += bottom * 2;
+        rect.w -= (top + bottom) * 2;
+        texBounds.y -= bottom;
+        texBounds.w -= top + bottom;
+    }
+    else if (gl_InstanceID / 3 == 2)
+    {
+        rect.y += rect.w - top * 2;
+        rect.w = top * 2;
+        texBounds.y -= texBounds.w - top;
+        texBounds.w = top;
+    }
+
+    uv = quad[gl_VertexID];
+
+    uv = vec2(texBounds.x, texBounds.y) / ATLAS_SIZE +
+         uv * (vec2(texBounds.z, -texBounds.w)) / ATLAS_SIZE;
+
+    layer = quads[gl_InstanceID / 9].layer;
+
+    vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
     vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
     gl_Position = vec4(pos, 0.0, 1.0);
 }

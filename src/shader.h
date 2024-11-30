@@ -24,6 +24,7 @@ struct Shader
     uint32_t getLocation(const char * uniform_name);
 
     uint32_t fontPx = -1;
+    int slices;
 };
 
 void createShader(Shader* shader, const std::string& vertexShader, const std::string& fragmentShader);

@@ -39,22 +39,8 @@ protected:
     bool m_hovered;
     bool m_pressed;
     bool m_active;
-    
-    int m_texture_tl;
-    int m_texture_tc;
-    int m_texture_tr;
 
-    int m_texture_l;
-    int m_texture_c;
-    int m_texture_r;
-
-    int m_texture_bl;
-    int m_texture_bc;
-    int m_texture_br;
-
-    bool m_has_hover_texture;
-    bool m_has_press_texture;
-    glm::vec4 m_texture_bounds;
+    TexEntry m_texentry;
 
     glm::vec2 m_pos;
     glm::vec2 m_size;

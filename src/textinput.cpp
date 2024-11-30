@@ -74,10 +74,11 @@ void TextInput::draw(GLContext* ctx)
     }
 
     Widget::draw(ctx);
-    int layer = 0;
-    if (m_active) layer = 3;
 
-    ctx->drawTexture(m_pos, m_texture_bounds, layer, m_center);
+    ctx->drawTexture(m_pos, m_texentry,
+        m_active ? STATE_ACTIVE : STATE_NONE,
+        m_center);
+
     if (!m_active && m_text_buffer.size() == 0)
     {
         ctx->drawText(m_placeholder.c_str(), m_pos, m_text_scale, m_text_color, m_center);

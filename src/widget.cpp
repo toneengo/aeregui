@@ -5,7 +5,7 @@ using namespace AereGui;
 Widget::Widget()
     : m_visible(true), m_pos({0, 0}), m_text_color(glm::vec4(1.0)),
       m_text_scale(1.0), m_center(false),
-      m_hovered(false), m_pressed(false)
+      m_hovered(false), m_pressed(false), m_active(false)
 {
 }
 
@@ -42,13 +42,7 @@ void Widget::assignTexture(std::string tex)
         exit(1);
     }
     TexEntry e = m_tex_map[tex];
-    m_has_hover_texture = e.hover;
-    m_has_press_texture = e.press;
-    
-    m_texture_bounds.x = e.x;
-    m_texture_bounds.y = e.y;
-    m_texture_bounds.z = e.width;
-    m_texture_bounds.w = e.height;
+    m_texentry = e;
 
     m_size.x = e.width * PIXEL_SIZE;
     m_size.y = e.height * PIXEL_SIZE;

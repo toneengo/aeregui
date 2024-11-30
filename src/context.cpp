@@ -87,6 +87,11 @@ GLContext::GLContext(GLFWwindow* window)
     createShader(&m_shaders.quad,
                  VERSION_HEADER + BUFFERS + QUADVERT,
                  VERSION_HEADER + QUADFRAG);
+
+    createShader(&m_shaders.quad9slice,
+                 VERSION_HEADER + BUFFERS + QUAD9SLICEVERT,
+                 VERSION_HEADER + QUADFRAG);
+    m_shaders.quad9slice.slices = m_shaders.quad9slice.getLocation("slices");
 }
 
 GLContext::~GLContext()
@@ -174,18 +179,18 @@ int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 
     return currx;
 }
 
-void GLContext::drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool center)
+void GLContext::drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool center)
 {
     if (center)
     {
-        pos.x -= texBounds.z / 2.0 * m_pixel_size;
-        pos.y -= texBounds.w / 2.0 * m_pixel_size;
+        pos.x -= e.width / 2.0 * m_pixel_size;
+        pos.y -= e.height / 2.0 * m_pixel_size;
     }
 
     Quad buf = {
         .vector = glm::vec4{pos, 0.f, 0.f},
-        .texBounds = texBounds,
-        .layer = layer,
+        .texBounds = glm::vec4{e.x, e.y, e.width, e.height},
+        .layer = state,
     };
 
     m_shaders.quad.use();
@@ -193,6 +198,28 @@ void GLContext::drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool 
     glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
 }
+
+void GLContext::draw9Slice(glm::vec2 pos, TexEntry& e, WidgetState state, bool center, glm::vec2 size)
+{
+    if (center)
+    {
+        pos.x -= size.x / 2.0;
+        pos.y -= size.y / 2.0;
+    }
+
+    Quad buf = {
+        .vector = glm::vec4{pos, size},
+        .texBounds = glm::vec4{e.x, e.y, e.width, e.height},
+        .layer = state,
+    };
+
+    m_shaders.quad9slice.use();
+    bindBuffers();
+    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
+    glUniform4f(m_shaders.quad9slice.slices, e.top, e.right, e.bottom, e.left);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
+}
+
 /*
 void GLContext::drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col)
 {
@@ -315,6 +342,7 @@ void GLContext::preloadTextures(const char* dir)
             std::cout << "Failed to load file: " << pstr << "\n";
             continue;
         }
+        
 
         if (m_tex_map.contains(fstr))
         {
@@ -328,6 +356,11 @@ void GLContext::preloadTextures(const char* dir)
         {
             m_tex_map[fstr].width = width; 
             m_tex_map[fstr].height = height; 
+            
+            m_tex_map[fstr].top = height/3.f;
+            m_tex_map[fstr].right = width/3.f;
+            m_tex_map[fstr].bottom = height/3.f;
+            m_tex_map[fstr].left = width/3.f;
         }
 
         if (pstr.ends_with(".hover.png"))
@@ -396,7 +429,7 @@ void GLContext::preloadTextures(const char* dir)
         }
 
         e.x = rect.x;
-        e.y = rect.y;
+        e.y = rect.y + rect.h;
 
         for (int row = 0; row < e.height; row++)
             memcpy(atlas     + 4 * tc(rect.x, rect.y + row), e.data     + (4 * e.width * row), e.width * 4);

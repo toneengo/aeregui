@@ -44,12 +44,13 @@ void Button::onMouseDownEvent(int button, int action)
 void Button::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
-    int layer = 0;
-    if (m_hovered) layer = 1;
-    if (m_pressed) layer = 2;
-    //if (m_active) layer = 3;
 
-    ctx->drawTexture(m_pos, m_texture_bounds, layer, true);
+    ctx->draw9Slice(m_pos, m_texentry,
+        m_pressed ? STATE_PRESS :
+        m_hovered ? STATE_HOVER :
+        m_active ? STATE_ACTIVE : STATE_NONE,
+        m_center, m_size);
+
     ctx->drawText(m_label.c_str(), m_pressed ? m_pos + m_pressed_offset : m_pos, m_text_scale, m_text_color, m_center);
 
 }

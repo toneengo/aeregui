@@ -21,7 +21,6 @@ protected:
     std::string m_text_buffer;
     std::string m_placeholder;
 
-    glm::vec2 m_text_offset;
 };
 
 NAMESPACE_END(AereGui);

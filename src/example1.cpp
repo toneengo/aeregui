@@ -66,6 +66,7 @@ int main()
     );
     button->assignTexture("button");
     button->setPos({200, 200});
+    button->setSize({200, 50});
     uictx.addWidget(button);
 
     Widget * input = new TextInput("Enter text here :-)");

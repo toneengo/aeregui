@@ -14,6 +14,14 @@ class Widget;
 class Screen;
 class GLContext;
 
+// state/texture layer enum
+enum WidgetState {
+    STATE_NONE = 0,
+    STATE_HOVER = 1,
+    STATE_PRESS = 2,
+    STATE_ACTIVE = 3,
+};
+
 class UIContext
 {
 public:
@@ -52,7 +60,8 @@ public:
     void preloadTextures(const char* dir);
 
     int drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center);
-    void drawTexture(glm::vec2 pos, glm::vec4 texBounds, int layer, bool center);
+    void drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool center);
+    void draw9Slice(glm::vec2 pos, TexEntry& e, WidgetState state, bool center, glm::vec2 size);
     void drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col);
 private:
     // Buffer name/Buffer binding pair
@@ -86,6 +95,7 @@ private:
     struct
     {
         Shader quad;
+        Shader quad9slice;
         Shader text;
     } m_shaders;
 
