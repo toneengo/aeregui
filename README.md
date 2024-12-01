@@ -1,3 +1,4 @@
+currently WIP.
 aeregui is a minimal C++ library used to render GUI elements for OpenGL games.
 Currently, only rendering text is supported. It assumes that GLAD has already loaded the functions.
 
