@@ -1,6 +1,5 @@
 #include "widget.h"
 
-const int PIXEL_SIZE = 2;
 using namespace AereGui;
 Widget::Widget()
     : m_visible(true), m_pos({0, 0}), m_text_color(glm::vec4(1.0)),
@@ -44,8 +43,8 @@ void Widget::assignTexture(std::string tex)
     TexEntry e = m_tex_map[tex];
     m_texentry = e;
 
-    m_size.x = e.width * PIXEL_SIZE;
-    m_size.y = e.height * PIXEL_SIZE;
+    m_size.x = e.width * 2;
+    m_size.y = e.height * 2;
 }
 
 void Widget::addChild(Widget* widget)

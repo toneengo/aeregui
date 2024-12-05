@@ -25,6 +25,7 @@ constexpr int ATLAS_SIZE = 512;
 
 void UIContext::render()
 {
+    m_gl_context->bindBuffers();
     m_screen->draw(m_gl_context);
 }
 
@@ -172,7 +173,6 @@ int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 
     }
 
     m_shaders.text.use();
-    bindBuffers();
     glNamedBufferSubData(m_ssb.text.buf, 0, sizeof(Character) * numchars, buf);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, numchars);
 
@@ -183,8 +183,8 @@ void GLContext::drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool 
 {
     if (center)
     {
-        pos.x -= e.width / 2.0 * m_pixel_size;
-        pos.y -= e.height / 2.0 * m_pixel_size;
+        pos.x -= e.width / 2.0;
+        pos.y -= e.height / 2.0;
     }
 
     Quad buf = {
@@ -194,7 +194,6 @@ void GLContext::drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool 
     };
 
     m_shaders.quad.use();
-    bindBuffers();
     glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
 }
@@ -214,7 +213,6 @@ void GLContext::draw9Slice(glm::vec2 pos, TexEntry& e, WidgetState state, bool c
     };
 
     m_shaders.quad9slice.use();
-    bindBuffers();
     glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
     glUniform4f(m_shaders.quad9slice.slices, e.top, e.right, e.bottom, e.left);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
@@ -327,7 +325,6 @@ void GLContext::preloadTextures(const char* dir)
         std::string pstr = f.path().string();
         std::string fstr = f.path().filename().string();
         fstr.erase(fstr.begin() + fstr.find('.'), fstr.end());
-        printf("laod %s \n", pstr.c_str());
 
         if (!pstr.ends_with(".png"))
         {
@@ -418,7 +415,6 @@ void GLContext::preloadTextures(const char* dir)
     i = 0;
     for (auto& p : m_tex_map)
     {
-        printf("huhh %s \n", p.first.c_str());
         TexEntry& e = p.second;
         stbrp_rect& rect = boxes[i++];
         // Copy the sprite data into the big chunga

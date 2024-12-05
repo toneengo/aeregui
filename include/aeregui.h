@@ -6,3 +6,4 @@
 #include "widget.h"
 #include "screen.h"
 #include "textinput.h"
+#include "window.h"
