@@ -12,8 +12,7 @@ Screen::Screen(GLContext* gl_ctx)
 
 void Screen::cursorPosCallback(double x, double y)
 {
-    fvec2 pos = fvec2(x - m_box.width/2.0, -(y - m_box.height/2.0));
-    Widget* w = findWidget(pos);
+    Widget* w = findWidget(ivec2(x, y));
 
     if (w != m_hovered_widget && m_hovered_widget)
         m_hovered_widget->onMouseEnterEvent(false);

@@ -59,8 +59,8 @@ public:
     void loadFont(const char* font);
     void preloadTextures(const char* dir);
 
-    int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, bool center);
-    void drawTexture(const Math::fbox& rect, TexEntry* e, WidgetState state, bool slice = true);
+    int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags);
+    void drawTexture(const Math::fbox& rect, TexEntry* e, WidgetState state, int flags);
     void drawQuad(Math::fbox rect, Math::fvec4 col);
 private:
     // Buffer name/Buffer binding pair

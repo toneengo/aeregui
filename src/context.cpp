@@ -138,19 +138,23 @@ void GLContext::setScreenSize(int width, int height)
 }
 
 Character buf[128];
-int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, bool center)
+int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags)
 {
     size_t numchars = strlen(text);
 
     float currx = 0;
-    if (center)
+
+    //#TODO: REMOVE THE TIMES TWOS!!!!
+    if (flags & CENTER_Y)
+        pos.y -= m_font_height * 2 / 2.0 * scale;
+
+    if (flags & CENTER_X)
     {
         for (int idx = 0; idx < numchars; idx++)
         {
             currx += (m_char_map[text[idx]].advance >> 6) * scale;
         }
         pos.x -= currx / 2.0;
-        pos.y -= m_font_height / 2.0 * scale;
     }
 
     currx = pos.x;
@@ -158,10 +162,10 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     for (int idx = 0; idx < numchars; idx++)
     {
         const CharInfo& info = m_char_map[text[idx]];
-        Character a = {
+        buf[idx] = {
             .rect = fbox(
                 currx + info.bearing.x * scale,
-                pos.y - (info.size.y - info.bearing.y) * scale - m_font_height,
+                pos.y - info.bearing.y * scale + m_font_height * 2 * scale,
                 info.size.x * scale,
                 info.size.y * scale
             ),
@@ -180,7 +184,7 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     return currx;
 }
 
-void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, bool slice)
+void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, int flags)
 {
     Quad buf = {
         .rect = rect,
@@ -190,7 +194,7 @@ void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, bo
 
     glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
 
-    if (slice)
+    if (flags & SLICE_9)
     {
         m_shaders.quad9slice.use();
         glUniform4f(m_shaders.quad9slice.slices, e->top, e->right, e->bottom, e->left);
@@ -247,6 +251,11 @@ void GLContext::loadFont(const char* font)
         {
             printf("ERROR::FREETYTPE: Failed to load Glyph\n");
             continue;
+        }
+
+        if (c == 'a')
+        {
+            m_font_height = (face->glyph->metrics.height - face->glyph->metrics.vertBearingY) >> 6;
         }
 
         m_char_map[c] = {

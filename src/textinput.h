@@ -20,7 +20,8 @@ public:
 protected:
     std::string m_text_buffer;
     std::string m_placeholder;
-
+    float m_text_width;
+    Math::fvec4 m_padding;
 };
 
 NAMESPACE_END(AereGui);

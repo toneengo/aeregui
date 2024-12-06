@@ -40,8 +40,8 @@ void Widget::assignTexture(std::string tex)
     TexEntry* e = &m_tex_map[tex];
     m_texentry = e;
 
-    m_box.x = e->bounds.w * 2;
-    m_box.y = e->bounds.h * 2;
+    m_box.w = e->bounds.w * 2;
+    m_box.h = e->bounds.h * 2;
 }
 
 void Widget::addChild(Widget* widget)

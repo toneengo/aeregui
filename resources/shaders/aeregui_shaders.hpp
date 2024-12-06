@@ -58,6 +58,9 @@ void main() {
     ); 
 
     vec4 rect = text[gl_InstanceID].rect;
+    rect.x -= screenSz.x / 2;
+    rect.y = screenSz.y / 2 - rect.y - rect.w;
+
     float scale = text[gl_InstanceID].scale;
 
     uv = quad[gl_VertexID];
@@ -109,6 +112,9 @@ void main() {
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
     vec4 rect = quads[gl_InstanceID].rect;
+    rect.x -= screenSz.x / 2;
+    rect.y = screenSz.y / 2 - rect.y - rect.w;
+
     vec4 texBounds = quads[gl_InstanceID].texBounds;
 
     uv = quad[gl_VertexID];
@@ -151,6 +157,9 @@ void main() {
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
     vec4 rect = quads[gl_InstanceID / 9].rect;
+    rect.x -= screenSz.x / 2;
+    rect.y = screenSz.y / 2 - rect.y - rect.w;
+
     vec4 texBounds = quads[gl_InstanceID / 9].texBounds;
 
     float top = slices.x;
@@ -178,19 +187,19 @@ void main() {
         texBounds.z = right;
     }
 
-    if (gl_InstanceID / 3 == 0)
+    if (gl_InstanceID % 9 / 3 == 0)
     {
         rect.w = bottom * 2;
         texBounds.w = bottom;
     }
-    else if (gl_InstanceID / 3 == 1)
+    else if (gl_InstanceID % 9 / 3 == 1)
     {
         rect.y += bottom * 2;
         rect.w -= (top + bottom) * 2;
         texBounds.y -= bottom;
         texBounds.w -= top + bottom;
     }
-    else if (gl_InstanceID / 3 == 2)
+    else if (gl_InstanceID % 9 / 3 == 2)
     {
         rect.y += rect.w - top * 2;
         rect.w = top * 2;

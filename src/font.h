@@ -55,12 +55,30 @@ struct vec2
         return val;
     }
 
+    //multiplication
+    template <typename v>
+    vec2<T> operator*(const v& num) const
+    {
+        vec2<T> val(x * static_cast<T>(num), y * static_cast<T>(num));
+        return val;
+    }
+
+    //division
+    template <typename v>
+    vec2<T> operator/(const v& num) const
+    {
+        vec2<T> val(x / static_cast<T>(num), y / static_cast<T>(num));
+        return val;
+    }
+
+    /*
     template <typename v>
     void operator-(const v& vec)
     {
         x -= vec.x;
         y -= vec.y;
     }
+    */
 
 };
 
@@ -289,5 +307,13 @@ struct RenderData {
 
 int loadFont(const char* font);
 void addText(std::vector<Character>& vec, const char * text);
+
+enum AereGui_flags : int
+{
+    CENTER_X = 0b00000001,
+    CENTER_Y = 0b00000010,
+    SLICE_9  = 0b00000100,
+    SLICE_3  = 0b00001000,
+};
 
 NAMESPACE_END(AereGui);

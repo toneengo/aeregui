@@ -43,8 +43,9 @@ void Window::draw(GLContext* ctx)
     Widget::draw(ctx);
 
     ctx->drawTexture(m_box, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE);
+        m_active ? STATE_ACTIVE : STATE_NONE,
+        SLICE_9);
 
-    ctx->drawText(m_title.c_str(), m_box.pos + Math::fvec2(0, m_box.height - m_bar_height), m_text_color, m_text_scale, false);
+    ctx->drawText(m_title.c_str(), m_box.pos + Math::fvec2(0, m_box.height - m_bar_height), m_text_color, m_text_scale, CENTER_Y);
 
 }

@@ -2,9 +2,10 @@
 #include <chrono>
 
 using namespace AereGui;
+using namespace Math;
 
 TextInput::TextInput(const char* placeholder)
-    : Widget(), m_placeholder(placeholder)
+    : Widget(), m_placeholder(placeholder), m_text_width(0)
 {
     m_text_scale = 0.4;
 }
@@ -76,15 +77,15 @@ void TextInput::draw(GLContext* ctx)
     Widget::draw(ctx);
 
     ctx->drawTexture(m_box, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE);
+        m_active ? STATE_ACTIVE : STATE_NONE, SLICE_9);
 
     if (!m_active && m_text_buffer.size() == 0)
     {
-        ctx->drawText(m_placeholder.c_str(), m_box.pos, m_text_color, m_text_scale, false);
+        ctx->drawText(m_placeholder.c_str(), m_box.pos + fvec2(0, m_box.size.y / 2), m_text_color, m_text_scale, CENTER_Y);
         return;
     }
 
-    float cursorPos = ctx->drawText(m_placeholder.c_str(), m_box.pos, m_text_color, m_text_scale, false);
+    float cursorPos = ctx->drawText(m_text_buffer.c_str(), m_box.pos, m_text_color, m_text_scale, false);
     if (showTextCursor && m_active)
-        ctx->drawText("|", {cursorPos, m_box.y}, m_text_color, m_text_scale, false);
+        ctx->drawText("|", {cursorPos, m_box.y}, m_text_color, m_text_scale, CENTER_Y);
 }
