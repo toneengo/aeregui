@@ -3,12 +3,9 @@
 using namespace AereGui;
 
 Button::Button(const char* label, _AEREGUI_FN_PTR fn)
-    : Widget(), m_label(label)
+    : Widget(), m_label(label), m_pressed_offset(0, -2), m_function(fn)
 {
-    m_center = true;
     m_text_scale = 0.4;
-    m_pressed_offset = {0, -2};
-    m_function = fn;
 }
 
 void Button::onMouseEnterEvent(bool enter)
@@ -45,12 +42,11 @@ void Button::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->draw9Slice(m_pos, m_texentry,
+    ctx->drawTexture(m_box, m_texentry,
         m_pressed ? STATE_PRESS :
         m_hovered ? STATE_HOVER :
-        m_active ? STATE_ACTIVE : STATE_NONE,
-        m_center, m_size);
+        m_active ? STATE_ACTIVE : STATE_NONE);
 
-    ctx->drawText(m_label.c_str(), m_pressed ? m_pos + m_pressed_offset : m_pos, m_text_scale, m_text_color, m_center);
+    ctx->drawText(m_label.c_str(), m_pressed ? m_box.pos + m_pressed_offset : m_box.pos, m_text_color, m_text_scale, true);
 
 }

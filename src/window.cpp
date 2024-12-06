@@ -42,10 +42,9 @@ void Window::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->draw9Slice(m_pos, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE,
-        m_center, m_size);
+    ctx->drawTexture(m_box, m_texentry,
+        m_active ? STATE_ACTIVE : STATE_NONE);
 
-    ctx->drawText(m_title.c_str(), m_pos + glm::vec2(0, m_size.y - m_bar_height), m_text_scale, m_text_color, m_center);
+    ctx->drawText(m_title.c_str(), m_box.pos + Math::fvec2(0, m_box.height - m_bar_height), m_text_color, m_text_scale, false);
 
 }

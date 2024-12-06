@@ -51,18 +51,17 @@ public:
     ~GLContext();
     void drawFromRenderData(const RenderData& data);
     void bindBuffers();
-    void setWidgetPos(glm::vec2 pos);
+    void setWidgetPos(Math::fvec2 pos);
 
     void setScreenSize(int width, int height);
-    glm::ivec2 getScreenSize() { return m_screen_size; };
+    Math::ivec2 getScreenSize() { return m_screen_size; };
 
     void loadFont(const char* font);
     void preloadTextures(const char* dir);
 
-    int drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center);
-    void drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool center);
-    void draw9Slice(glm::vec2 pos, TexEntry& e, WidgetState state, bool center, glm::vec2 size);
-    void drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col);
+    int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, bool center);
+    void drawTexture(const Math::fbox& rect, TexEntry* e, WidgetState state, bool slice = true);
+    void drawQuad(Math::fbox rect, Math::fvec4 col);
 private:
     // Buffer name/Buffer binding pair
     struct nameIdx
@@ -100,7 +99,7 @@ private:
     } m_shaders;
 
     float fontPx;
-    glm::ivec2 m_screen_size;
+    Math::ivec2 m_screen_size;
 
     int m_pixel_size = 2;
 

@@ -1,17 +1,18 @@
 #include "screen.h"
 
 using namespace AereGui;
+using namespace Math;
 
 Screen::Screen(GLContext* gl_ctx)
     : Widget(), m_gl_context(gl_ctx)
 {
-    m_pos = {0.0, 0.0};
-    m_size = gl_ctx->getScreenSize();
+    m_box.pos = {0.0, 0.0};
+    m_box.size = gl_ctx->getScreenSize();
 }
 
 void Screen::cursorPosCallback(double x, double y)
 {
-    glm::vec2 pos = glm::vec2{x - m_size.x/2.0, -(y - m_size.y/2.0)};
+    fvec2 pos = fvec2(x - m_box.width/2.0, -(y - m_box.height/2.0));
     Widget* w = findWidget(pos);
 
     if (w != m_hovered_widget && m_hovered_widget)
@@ -51,5 +52,5 @@ void Screen::charCallback(unsigned int codepoint)
 void Screen::framebufferSizeCallback(int width, int height)
 {
     m_gl_context->setScreenSize(width, height);
-    m_size = m_gl_context->getScreenSize();
+    m_box.size = m_gl_context->getScreenSize();
 }

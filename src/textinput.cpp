@@ -75,17 +75,16 @@ void TextInput::draw(GLContext* ctx)
 
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_pos, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE,
-        m_center);
+    ctx->drawTexture(m_box, m_texentry,
+        m_active ? STATE_ACTIVE : STATE_NONE);
 
     if (!m_active && m_text_buffer.size() == 0)
     {
-        ctx->drawText(m_placeholder.c_str(), m_pos, m_text_scale, m_text_color, m_center);
+        ctx->drawText(m_placeholder.c_str(), m_box.pos, m_text_color, m_text_scale, false);
         return;
     }
 
-    int cursorPos = ctx->drawText(m_text_buffer.c_str(), m_pos, m_text_scale, m_text_color, m_center);
+    float cursorPos = ctx->drawText(m_placeholder.c_str(), m_box.pos, m_text_color, m_text_scale, false);
     if (showTextCursor && m_active)
-        ctx->drawText("|", {cursorPos, m_pos.y}, m_text_scale, m_text_color, m_center);
+        ctx->drawText("|", {cursorPos, m_box.y}, m_text_color, m_text_scale, false);
 }

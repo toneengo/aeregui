@@ -11,15 +11,15 @@ inline const std::string VERSION_HEADER = R"#(
 
 inline const std::string BUFFERS = R"#(
 struct Character {
-    vec4 vector;
+    vec4 rect;
     vec4 col;
     int layer;
     float scale;
 };
 
 struct Quad {
-    vec4 vector;
-    vec4 texBounds;
+    vec4 rect;
+    ivec4 texBounds;
     int layer;
 };
 
@@ -57,7 +57,7 @@ void main() {
         ivec2(1, 0)
     ); 
 
-    vec4 rect = text[gl_InstanceID].vector;
+    vec4 rect = text[gl_InstanceID].rect;
     float scale = text[gl_InstanceID].scale;
 
     uv = quad[gl_VertexID];
@@ -108,7 +108,7 @@ void main() {
 
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
-    vec4 rect = quads[gl_InstanceID].vector;
+    vec4 rect = quads[gl_InstanceID].rect;
     vec4 texBounds = quads[gl_InstanceID].texBounds;
 
     uv = quad[gl_VertexID];
@@ -150,7 +150,7 @@ void main() {
 
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
-    vec4 rect = quads[gl_InstanceID / 9].vector;
+    vec4 rect = quads[gl_InstanceID / 9].rect;
     vec4 texBounds = quads[gl_InstanceID / 9].texBounds;
 
     float top = slices.x;

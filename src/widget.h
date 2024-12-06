@@ -3,7 +3,6 @@
 #include <vector>
 #include "font.h"
 #include "context.h"
-#include "glm/glm.hpp"
 
 NAMESPACE_BEGIN(AereGui);
 
@@ -13,17 +12,18 @@ public:
     Widget();
     virtual void draw(GLContext* ctx);
 
-    void setPos(glm::vec2 pos) { m_pos = pos; };
-    void setSize(glm::vec2 size) { m_size = size; };
+    void setPos(Math::fvec2 pos) { m_box.pos = pos; };
+    void setSize(Math::fvec2 size) { m_box.size = size; };
 
     virtual void addChild(Widget * widget);
 
-    Widget* findWidget(glm::vec2 pos);
-    bool contains(glm::vec2 pos);
+    Widget* findWidget(const Math::fvec2& pos);
+    bool contains(const Math::fvec2& pos);
     bool visible() { return m_visible; };
 
     void assignTexture(std::string tex);
 
+    virtual void onFrameResizeEvent(int button, int action) {};
     virtual void onMouseDownEvent(int button, int action) {};
     virtual void onMouseEnterEvent(bool enter) {};
     virtual void onKeyEvent(int key, int scancode, int action, int mods) {};
@@ -40,16 +40,14 @@ protected:
     bool m_pressed;
     bool m_active;
 
-    TexEntry m_texentry;
+    TexEntry* m_texentry;
 
-    glm::vec2 m_pos;
-    glm::vec2 m_size;
-
-    glm::vec2 m_text_offset;
-
-    glm::vec4 m_text_color;
+    Math::fbox m_box;
+    Math::fvec4 m_text_color;
     float m_text_scale;
-    bool m_center;
+
+    bool m_inherit_pos;
+    bool m_inherit_size;
 };
 
 NAMESPACE_END();

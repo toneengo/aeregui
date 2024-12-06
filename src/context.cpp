@@ -20,6 +20,7 @@
 #include <iostream>
 
 using namespace AereGui;
+using namespace AereGui::Math;
 
 constexpr int ATLAS_SIZE = 512;
 
@@ -73,7 +74,7 @@ GLContext::GLContext(GLFWwindow* window)
 
     glfwGetWindowSize(window, &m_screen_size.x, &m_screen_size.y);
     glCreateBuffers(1, &m_ub.screen_size.buf);
-    glNamedBufferStorage(m_ub.screen_size.buf, sizeof(int) * 2, glm::value_ptr(m_screen_size), GL_DYNAMIC_STORAGE_BIT);
+    glNamedBufferStorage(m_ub.screen_size.buf, sizeof(int) * 2, &m_screen_size, GL_DYNAMIC_STORAGE_BIT);
     m_ub.screen_size.bind = 0;
 
     float widgetPos[2] = { 0.f, 0.f };
@@ -123,9 +124,9 @@ void GLContext::drawFromRenderData(const RenderData& data)
     */
 }
 
-void GLContext::setWidgetPos(glm::vec2 pos)
+void GLContext::setWidgetPos(Math::fvec2 pos)
 {
-    glNamedBufferSubData(m_ub.widget_pos.buf, 0, sizeof(float) * 2, glm::value_ptr(pos) );
+    glNamedBufferSubData(m_ub.widget_pos.buf, 0, sizeof(float) * 2, &pos );
 }
 
 void GLContext::setScreenSize(int width, int height)
@@ -133,13 +134,13 @@ void GLContext::setScreenSize(int width, int height)
     m_screen_size.x = width;
     m_screen_size.y = height;
     glViewport(0, 0, width, height);
-    glNamedBufferSubData(m_ub.screen_size.buf, 0, sizeof(int) * 2, glm::value_ptr(m_screen_size));
+    glNamedBufferSubData(m_ub.screen_size.buf, 0, sizeof(int) * 2, &m_screen_size);
 }
 
-int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 col, bool center)
+Character buf[128];
+int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, bool center)
 {
     size_t numchars = strlen(text);
-    Character buf[128];
 
     float currx = 0;
     if (center)
@@ -157,13 +158,13 @@ int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 
     for (int idx = 0; idx < numchars; idx++)
     {
         const CharInfo& info = m_char_map[text[idx]];
-        buf[idx] = {
-            .vector = {
+        Character a = {
+            .rect = fbox(
                 currx + info.bearing.x * scale,
-                pos.y - (info.size.y - info.bearing.y) * scale,
+                pos.y - (info.size.y - info.bearing.y) * scale - m_font_height,
                 info.size.x * scale,
-                info.size.y * scale,
-            },
+                info.size.y * scale
+            ),
             .col = col,
             .layer = info.layer,
             .scale = scale,
@@ -179,43 +180,26 @@ int GLContext::drawText(const char* text, glm::vec2 pos, float scale, glm::vec4 
     return currx;
 }
 
-void GLContext::drawTexture(glm::vec2 pos, TexEntry& e, WidgetState state, bool center)
+void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, bool slice)
 {
-    if (center)
-    {
-        pos.x -= e.width / 2.0;
-        pos.y -= e.height / 2.0;
-    }
-
     Quad buf = {
-        .vector = glm::vec4{pos, 0.f, 0.f},
-        .texBounds = glm::vec4{e.x, e.y, e.width, e.height},
+        .rect = rect,
+        .texBounds = e->bounds,
         .layer = state,
     };
+
+    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
+
+    if (slice)
+    {
+        m_shaders.quad9slice.use();
+        glUniform4f(m_shaders.quad9slice.slices, e->top, e->right, e->bottom, e->left);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
+        return;
+    }
 
     m_shaders.quad.use();
-    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
-}
-
-void GLContext::draw9Slice(glm::vec2 pos, TexEntry& e, WidgetState state, bool center, glm::vec2 size)
-{
-    if (center)
-    {
-        pos.x -= size.x / 2.0;
-        pos.y -= size.y / 2.0;
-    }
-
-    Quad buf = {
-        .vector = glm::vec4{pos, size},
-        .texBounds = glm::vec4{e.x, e.y, e.width, e.height},
-        .layer = state,
-    };
-
-    m_shaders.quad9slice.use();
-    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
-    glUniform4f(m_shaders.quad9slice.slices, e.top, e.right, e.bottom, e.left);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
 }
 
 /*
@@ -251,7 +235,7 @@ void GLContext::loadFont(const char* font)
     glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_ta.font.buf);
     glTextureStorage3D(m_ta.font.buf, 1, GL_R8, fontPx, fontPx, 128);
 
-    unsigned char * empty = new unsigned char[fontPx * fontPx];
+    unsigned char * empty = new unsigned char[int(fontPx * fontPx)];
     memset(empty, 0, fontPx * fontPx * sizeof(unsigned char));
 
     int currIdx = 0;
@@ -305,6 +289,7 @@ int tc(int x, int y)
     return x + (y * ATLAS_SIZE);
 }
 
+//#TODO: remove ATLAS_SIZE, determine width and height
 std::unordered_map<std::string, AereGui::TexEntry> m_tex_map;
 void GLContext::preloadTextures(const char* dir)
 {
@@ -343,7 +328,7 @@ void GLContext::preloadTextures(const char* dir)
 
         if (m_tex_map.contains(fstr))
         {
-            if (m_tex_map[fstr].width != width || m_tex_map[fstr].height != height)
+            if (m_tex_map[fstr].bounds.w != width || m_tex_map[fstr].bounds.h != height)
             {
                 printf("Texture variant dimension mismatch: %s", pstr.c_str());
                 continue;
@@ -351,8 +336,8 @@ void GLContext::preloadTextures(const char* dir)
         }
         else
         {
-            m_tex_map[fstr].width = width; 
-            m_tex_map[fstr].height = height; 
+            m_tex_map[fstr].bounds.w = width; 
+            m_tex_map[fstr].bounds.h = height; 
             
             m_tex_map[fstr].top = height/3.f;
             m_tex_map[fstr].right = width/3.f;
@@ -392,7 +377,7 @@ void GLContext::preloadTextures(const char* dir)
     for (auto& e : m_tex_map)
     {
         boxes[i] = {
-            i, e.second.width, e.second.height
+            i, e.second.bounds.w, e.second.bounds.h
         };
         i++;
     }
@@ -424,23 +409,23 @@ void GLContext::preloadTextures(const char* dir)
             continue;
         }
 
-        e.x = rect.x;
-        e.y = rect.y + rect.h;
+        e.bounds.x = rect.x;
+        e.bounds.y = rect.y + rect.h;
 
-        for (int row = 0; row < e.height; row++)
-            memcpy(atlas     + 4 * tc(rect.x, rect.y + row), e.data     + (4 * e.width * row), e.width * 4);
+        for (int row = 0; row < e.bounds.h; row++)
+            memcpy(atlas     + 4 * tc(rect.x, rect.y + row), e.data     + (4 * e.bounds.w * row), e.bounds.w * 4);
 
         if (e._hover != nullptr)
-            for (int row = 0; row < e.height; row++)
-                memcpy(hover + 4 * tc(rect.x, rect.y + row), e._hover + (4 * e.width * row), e.width * 4);
+            for (int row = 0; row < e.bounds.h; row++)
+                memcpy(hover + 4 * tc(rect.x, rect.y + row), e._hover + (4 * e.bounds.w * row), e.bounds.w * 4);
 
         if (e._press != nullptr)
-            for (int row = 0; row < e.height; row++)
-                memcpy(press + 4 * tc(rect.x, rect.y + row), e._press + (4 * e.width * row), e.width * 4);
+            for (int row = 0; row < e.bounds.h; row++)
+                memcpy(press + 4 * tc(rect.x, rect.y + row), e._press + (4 * e.bounds.w * row), e.bounds.w * 4);
 
         if (e._active != nullptr)
-            for (int row = 0; row < e.height; row++)
-                memcpy(active + 4 * tc(rect.x, rect.y + row), e._active + (4 * e.width * row), e.width * 4);
+            for (int row = 0; row < e.bounds.h; row++)
+                memcpy(active + 4 * tc(rect.x, rect.y + row), e._active + (4 * e.bounds.w * row), e.bounds.w * 4);
     }
 
     if(!stbi_write_png("resources/atlas.png", ATLAS_SIZE, ATLAS_SIZE, 4, atlas, 4 * ATLAS_SIZE))
