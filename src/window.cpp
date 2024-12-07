@@ -18,7 +18,6 @@ void Window::onCursorPosEvent(int x, int y)
     }
     else if (m_resizing)
     {
-        m_cursor_offset.y *= -1;
         setSize(m_cursor_pos - m_box.pos + m_cursor_offset);
     }
 }
