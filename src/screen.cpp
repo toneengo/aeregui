@@ -30,12 +30,16 @@ void Screen::cursorPosCallback(double x, double y)
 void Screen::mouseButtonCallback(int button, int action)
 {
     //Deactivates current active widget if it is not hovered
-    if (m_hovered_widget != m_active_widget && m_active_widget)
+    if (m_active_widget)
         m_active_widget->onMouseDownEvent(button, action);
 
-    m_active_widget = m_hovered_widget;
-    if (m_hovered_widget)
-        m_hovered_widget->onMouseDownEvent(button, action);
+    if (action == GLFW_PRESS)
+    {
+        if (m_active_widget != m_hovered_widget && m_hovered_widget)
+            m_hovered_widget->onMouseDownEvent(button, action);
+
+        m_active_widget = m_hovered_widget;
+    }
 }
 
 void Screen::keyCallback(int key, int scancode, int action, int mods)

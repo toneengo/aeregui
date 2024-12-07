@@ -22,25 +22,20 @@ void Widget::onCursorPosEvent(int x, int y)
 
 void Widget::onMouseDownEvent(int button, int action)
 {
-    if (m_state & STATE_HOVER)
+    if (action == GLFW_PRESS)
     {
-        switch (action)
+        if (m_state & STATE_HOVER)
         {
-            case (GLFW_PRESS):
-                m_state = m_state | STATE_PRESS;
-                setFlagBit(m_state, STATE_ACTIVE, 1);
-                break;
-            case (GLFW_RELEASE):
-                setFlagBit(m_state, STATE_PRESS, 0);
-                break;
-            default:
-                break;
+            setFlagBit(m_state, STATE_PRESS, 1);
+            setFlagBit(m_state, STATE_ACTIVE, 1);
+            return;
         }
-    }
-    else
-    {
-        //disable state_active
+
         setFlagBit(m_state, STATE_ACTIVE, 0);
+    }
+
+    if (action == GLFW_RELEASE) {
+        setFlagBit(m_state, STATE_PRESS, 0);
     }
 }
 
