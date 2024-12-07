@@ -279,4 +279,55 @@ void main() {
 }
 )#";
 
+inline const std::string BLUR1 = R"#(
+//kawase downscale
+
+out vec4 frag;
+
+in vec2 uv;
+
+uniform vec2 halfpixel;
+uniform float radius;
+
+uniform sampler2D image;
+
+void main() {
+    vec2 uv2 = uv * 2.0;
+    frag = texture(image, uv2) * 4.0;
+    frag += texture(image, uv2 - halfpixel.xy * radius);
+    frag += texture(image, uv2 + halfpixel.xy * radius);
+    frag += texture(image, uv2 + vec2(halfpixel.x, -halfpixel.y) * radius);
+    frag += texture(image, uv2 - vec2(halfpixel.x, -halfpixel.y) * radius);
+
+    frag = frag / 8.0;
+}
+)#";
+
+inline const std::string BLUR2 = R"#(
+//kawase upscale
+
+out vec4 frag;
+
+in vec2 uv;
+
+uniform vec2 halfpixel;
+uniform float radius;
+
+uniform sampler2D image;
+
+void main() {
+    vec2 uv2 = uv / 2.0;
+    frag = texture(image, uv2 + vec2(-halfpixel.x * 2.0, 0.0) * radius);
+    frag += texture(image, uv2 + vec2(-halfpixel.x, halfpixel.y) * radius) * 2.0;
+    frag += texture(image, uv2 + vec2(0.0, halfpixel.y * 2.0) * radius);
+    frag += texture(image, uv2 + vec2(halfpixel.x, halfpixel.y) * radius) * 2.0;
+    frag += texture(image, uv2 + vec2(halfpixel.x * 2.0, 0.0) * radius);
+    frag += texture(image, uv2 + vec2(halfpixel.x, -halfpixel.y) * radius) * 2.0;
+    frag += texture(image, uv2 + vec2(0.0, -halfpixel.y * 2.0) * radius);
+    frag += texture(image, uv2 + vec2(-halfpixel.x, -halfpixel.y) * radius) * 2.0;
+
+    frag = frag / 12.0;
+}
+)#";
+
 }

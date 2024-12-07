@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "font.h"
+#include "types.h"
 #include "context.h"
 #include "stdio.h"
 
@@ -13,8 +13,8 @@ public:
     Widget();
     virtual void draw(GLContext* ctx);
 
-    void setPos(Math::fvec2 pos) { m_box.pos = pos; };
-    void setSize(Math::fvec2 size) { m_box.size = size; m_inner_box = Math::fbox::pad(m_box, m_padding); };
+    void setPos(Math::fvec2 pos) { m_inner_box.translate(pos - m_box.pos); m_box.pos = pos; };
+    void setSize(Math::fvec2 size) { m_inner_box.size = m_inner_box.size + (size - m_box.size); m_box.size = size; };
     void setPadding(float px) { m_inner_box = Math::fbox::expand(m_box, -px); };
 
     virtual void addChild(Widget * widget);
@@ -48,6 +48,8 @@ protected:
     Math::fvec4 m_padding;
 
     Math::fvec4 m_text_color;
+
+    Math::ivec2 m_cursor_pos;
 
     float m_text_scale;
 

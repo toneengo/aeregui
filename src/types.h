@@ -258,6 +258,17 @@ struct box
         return {_b.x - _val, _b.y - _val, _b.width + _val*2, _b.height + _val*2};
     }
 
+    void translate(T _x, T _y)
+    {
+        x += _x;
+        y += _y;
+    }
+    void translate(vec2<T> _vec)
+    {
+        x += _vec.x;
+        y += _vec.y;
+    }
+
     void pad(T _top, T _right, T _bottom, T _left)
     {
         x += _left;
@@ -277,6 +288,13 @@ struct box
     static box pad(box _b, vec4<T> _vec)
     {
         return {_b.x + _vec.left, _b.y + _vec.top, _b.width - (_vec.right + _vec.left), _b.height - (_vec.top + _vec.bottom)};
+    }
+
+    bool contains(const vec2<T>& _vec)
+    {
+        vec2<T> d = _vec - pos;
+        return d.x <= width && d.x >= 0 &&
+               d.y <= height && d.y >= 0;
     }
 
 };

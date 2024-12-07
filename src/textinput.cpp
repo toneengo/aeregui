@@ -25,7 +25,6 @@ TextInput::TextInput(const char* placeholder)
 void TextInput::onCursorPosEvent(int x, int y)
 {
     Widget::onCursorPosEvent(x, y);
-    m_cursor_pos = {x, y};
 
     if (getFlagBit(m_state, STATE_PRESS) && m_sel.x != -1)
         m_sel.y = binarySearch(m_pos_buf, float(x) - m_box.x - m_offsetx);

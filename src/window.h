@@ -11,12 +11,13 @@ class Window : public Widget
 public:
     Window(const char* title);
     virtual void draw(GLContext* ctx);
-    /*
-    void onMouseEnterEvent(bool enter);
+    void onCursorPosEvent(int x, int y);
     void onMouseDownEvent(int button, int action);
-    */
 protected:
     std::string m_title;
+    bool m_resizing;
+    bool m_moving;
+    Math::fvec2 m_cursor_offset;
     float m_bar_height;
 };
 

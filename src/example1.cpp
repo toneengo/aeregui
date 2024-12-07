@@ -80,8 +80,9 @@ int main()
 
     Widget * awindow = new Window("My amazing gui window!!!!");
     awindow->assignTexture("window");
-    awindow->setSize({200, 200});
-    awindow->setPos({-200, -200});
+    awindow->setSize({400, 200});
+    awindow->setPos({400, 500});
+    awindow->setPadding(8);
     uictx.addWidget(awindow);
 
     unsigned int VAO;

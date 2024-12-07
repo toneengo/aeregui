@@ -4,7 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "common.h"
 #include "shader.h"
-#include "font.h"
+#include "types.h"
 #include <unordered_map>
 #include <vector>
 
@@ -16,6 +16,7 @@ enum AereGui_flags : int
     CENTER_Y = 0b00000010,
     SLICE_9  = 0b00000100,
     SLICE_3  = 0b00001000,
+    BLUR     = 0b00010000,
 };
 
 enum AereGui_state : uint8_t 

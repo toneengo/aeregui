@@ -27,8 +27,6 @@ protected:
     float m_offsetx;
 
     int m_text_cur;
-    Math::ivec2 m_cursor_pos;
-    Math::ivec2 m_last_cursor_pos;
 
     //x1, x2
     Math::ivec2 m_sel;

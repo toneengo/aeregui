@@ -12,6 +12,7 @@ Widget::Widget()
 
 void Widget::onCursorPosEvent(int x, int y)
 {
+    m_cursor_pos = {x, y};
     bool enter = contains(fvec2(x, y));
     setFlagBit(m_state, STATE_HOVER, enter ? 1 : 0);
     /*
