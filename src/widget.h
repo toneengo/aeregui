@@ -3,6 +3,7 @@
 #include <vector>
 #include "font.h"
 #include "context.h"
+#include "stdio.h"
 
 NAMESPACE_BEGIN(AereGui);
 
@@ -13,7 +14,8 @@ public:
     virtual void draw(GLContext* ctx);
 
     void setPos(Math::fvec2 pos) { m_box.pos = pos; };
-    void setSize(Math::fvec2 size) { m_box.size = size; };
+    void setSize(Math::fvec2 size) { m_box.size = size; m_inner_box = Math::fbox::pad(m_box, m_padding); };
+    void setPadding(float px) { m_inner_box = Math::fbox::expand(m_box, -px); };
 
     virtual void addChild(Widget * widget);
 
@@ -24,8 +26,8 @@ public:
     void assignTexture(std::string tex);
 
     virtual void onFrameResizeEvent(int button, int action) {};
-    virtual void onMouseDownEvent(int button, int action) {};
-    virtual void onMouseEnterEvent(bool enter) {};
+    virtual void onMouseDownEvent(int button, int action);
+    virtual void onCursorPosEvent(int x, int y);
     virtual void onKeyEvent(int key, int scancode, int action, int mods) {};
     virtual void onCharEvent(unsigned int codepoint) {};
 
@@ -36,14 +38,17 @@ protected:
 
     bool m_visible;
 
-    bool m_hovered;
-    bool m_pressed;
-    bool m_active;
+    unsigned int m_state;
 
     TexEntry* m_texentry;
 
     Math::fbox m_box;
+    Math::fbox m_inner_box;
+    
+    Math::fvec4 m_padding;
+
     Math::fvec4 m_text_color;
+
     float m_text_scale;
 
     bool m_inherit_pos;

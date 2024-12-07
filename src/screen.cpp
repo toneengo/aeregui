@@ -12,13 +12,17 @@ Screen::Screen(GLContext* gl_ctx)
 
 void Screen::cursorPosCallback(double x, double y)
 {
-    Widget* w = findWidget(ivec2(x, y));
+    m_cursor_pos = ivec2(x, y);
+    Widget* w = findWidget(m_cursor_pos);
 
     if (w != m_hovered_widget && m_hovered_widget)
-        m_hovered_widget->onMouseEnterEvent(false);
+        m_hovered_widget->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
 
     if (w != nullptr)
-        w->onMouseEnterEvent(true);
+        w->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
+    
+    if (m_active_widget != nullptr)
+        m_active_widget->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
 
     m_hovered_widget = w;
 }
@@ -52,4 +56,11 @@ void Screen::framebufferSizeCallback(int width, int height)
 {
     m_gl_context->setScreenSize(width, height);
     m_box.size = m_gl_context->getScreenSize();
+}
+
+void Screen::draw(GLContext* ctx)
+{
+    glEnable(GL_SCISSOR_TEST);
+    Widget::draw(ctx);
+    glDisable(GL_SCISSOR_TEST);
 }

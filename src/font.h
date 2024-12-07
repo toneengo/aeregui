@@ -117,14 +117,14 @@ struct vec4
 {
     union {
         struct {
-            union { T x, r; };
+            union { T x, r, top; };
             union {
                 struct {
-                    union { T y, g; };
+                    union { T y, g, right; };
                     union {
                         struct {
-                            union { T z, b; };
-                            union { T w, a; };
+                            union { T z, b, bottom; };
+                            union { T w, a, left; };
                         };
                         union { vec2<T> zw, ba; };
                     };
@@ -137,7 +137,12 @@ struct vec4
         union { vec2<T> xy, rg; };
     };
 
-    vec4() {}
+    vec4()
+        : x(0),
+          y(0),
+          z(0),
+          w(0)
+    {}
     
     vec4(T _x, T _y, T _z, T _w)
         : x(static_cast<T>(_x)),
@@ -247,6 +252,33 @@ struct box
           h(static_cast<T>(_box.h))
     {}
 
+    //expand or shrink box
+    static box expand(box _b, T _val)
+    {
+        return {_b.x - _val, _b.y - _val, _b.width + _val*2, _b.height + _val*2};
+    }
+
+    void pad(T _top, T _right, T _bottom, T _left)
+    {
+        x += _left;
+        y += _top;
+        width -= _right + _left;
+        height -= _top + _bottom;
+    }
+
+    void pad(vec4<T> _vec)
+    {
+        x += _vec.left;
+        y += _vec.top;
+        width -= _vec.right + _vec.left;
+        height -= _vec.top + _vec.bottom;
+    }
+
+    static box pad(box _b, vec4<T> _vec)
+    {
+        return {_b.x + _vec.left, _b.y + _vec.top, _b.width - (_vec.right + _vec.left), _b.height - (_vec.top + _vec.bottom)};
+    }
+
 };
 
 typedef box<float> fbox;
@@ -270,6 +302,12 @@ struct alignas(16) Quad
     int layer;
 };
 
+struct ColQuad
+{
+    Math::fbox rect; //xpos, ypos, width, height
+    Math::fvec4 col;
+};
+
 // font information
 struct CharInfo
 {
@@ -283,9 +321,7 @@ struct TexEntry
 {
     int layer;
 
-    bool hover;
-    bool press;
-    bool active;
+    unsigned int has_state = 0;
 
     float top;
     float right;
@@ -307,13 +343,5 @@ struct RenderData {
 
 int loadFont(const char* font);
 void addText(std::vector<Character>& vec, const char * text);
-
-enum AereGui_flags : int
-{
-    CENTER_X = 0b00000001,
-    CENTER_Y = 0b00000010,
-    SLICE_9  = 0b00000100,
-    SLICE_3  = 0b00001000,
-};
 
 NAMESPACE_END(AereGui);

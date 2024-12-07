@@ -13,7 +13,7 @@ class Button : public Widget
 public:
     Button(const char* label, _AEREGUI_FN_PTR fn);
     virtual void draw(GLContext* ctx);
-    void onMouseEnterEvent(bool enter);
+    //void onMouseEnterEvent(bool enter);
     void onMouseDownEvent(int button, int action);
 protected:
     std::string m_label;

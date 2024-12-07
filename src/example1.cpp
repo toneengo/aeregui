@@ -73,6 +73,9 @@ int main()
 
     Widget * input = new TextInput("Enter text here :-)");
     input->assignTexture("textinput");
+    input->setPos({500, 200});
+    input->setSize({200, 32});
+    input->setPadding(4);
     uictx.addWidget(input);
 
     Widget * awindow = new Window("My amazing gui window!!!!");

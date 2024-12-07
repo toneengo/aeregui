@@ -8,6 +8,7 @@ Window::Window(const char* title)
     m_text_scale = 0.4;
 }
 
+/*
 void Window::onMouseEnterEvent(bool enter)
 {
     m_hovered = enter ? true : false;
@@ -16,35 +17,14 @@ void Window::onMouseEnterEvent(bool enter)
 
 void Window::onMouseDownEvent(int button, int action)
 {
-    if (m_hovered)
-    {
-        switch (action)
-        {
-            case (GLFW_PRESS):
-                m_pressed = true;
-                m_active = true;
-                break;
-            case (GLFW_RELEASE):
-                m_pressed = false;
-                m_active = true;
-                break;
-            default:
-                break;
-        }
-    }
-    else
-    {
-        m_active = false;
-    }
 }
+*/
 
 void Window::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE,
-        SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
     ctx->drawText(m_title.c_str(), m_box.pos + Math::fvec2(0, m_box.height - m_bar_height), m_text_color, m_text_scale, CENTER_Y);
 

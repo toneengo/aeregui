@@ -10,18 +10,27 @@
 
 NAMESPACE_BEGIN(AereGui);
 
+enum AereGui_flags : int
+{
+    CENTER_X = 0b00000001,
+    CENTER_Y = 0b00000010,
+    SLICE_9  = 0b00000100,
+    SLICE_3  = 0b00001000,
+};
+
+enum AereGui_state : uint8_t 
+{
+    STATE_NONE   = 0b00000001,
+    STATE_ACTIVE = 0b00000010,
+    STATE_HOVER  = 0b00000100,
+    STATE_PRESS  = 0b00001000,
+};
+
 class Widget;
 class Screen;
 class GLContext;
 
 // state/texture layer enum
-enum WidgetState {
-    STATE_NONE = 0,
-    STATE_HOVER = 1,
-    STATE_PRESS = 2,
-    STATE_ACTIVE = 3,
-};
-
 class UIContext
 {
 public:
@@ -60,8 +69,8 @@ public:
     void preloadTextures(const char* dir);
 
     int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags);
-    void drawTexture(const Math::fbox& rect, TexEntry* e, WidgetState state, int flags);
-    void drawQuad(Math::fbox rect, Math::fvec4 col);
+    void drawTexture(const Math::fbox& rect, TexEntry* e, int state, int flags);
+    void drawQuad(const Math::fbox& rect, const Math::fvec4& col);
 private:
     // Buffer name/Buffer binding pair
     struct nameIdx
@@ -82,6 +91,7 @@ private:
     {
         nameIdx text;
         nameIdx quad;
+        nameIdx colquad;
     } m_ssb;
 
     // Texture arrays
@@ -94,6 +104,7 @@ private:
     struct
     {
         Shader quad;
+        Shader colquad;
         Shader quad9slice;
         Shader text;
     } m_shaders;
@@ -105,7 +116,6 @@ private:
 
     int m_font_height;
 
-    std::unordered_map<char, AereGui::CharInfo> m_char_map;
 };
 
 NAMESPACE_END(AereGui);

@@ -1,4 +1,5 @@
 #include "button.h"
+#include "util.h"
 
 using namespace AereGui;
 
@@ -8,46 +9,29 @@ Button::Button(const char* label, _AEREGUI_FN_PTR fn)
     m_text_scale = 0.4;
 }
 
+/*
 void Button::onMouseEnterEvent(bool enter)
 {
-    m_hovered = enter ? true : false;
-    m_pressed = enter ? m_pressed : false;
 }
+*/
 
 void Button::onMouseDownEvent(int button, int action)
 {
-    if (m_hovered)
-    {
-        switch (action)
-        {
-            case (GLFW_PRESS):
-                m_pressed = true;
-                break;
-            case (GLFW_RELEASE):
-                m_pressed = false;
-                m_active = true;
-                m_function();
-                break;
-            default:
-                break;
-        }
-    }
-    else
-    {
-        m_active = false;
-    }
+    Widget::onMouseDownEvent(button, action);
+    if (m_state & STATE_HOVER && action == GLFW_RELEASE)
+        m_function();
 }
 
 void Button::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry,
-        m_pressed ? STATE_PRESS :
-        m_hovered ? STATE_HOVER :
-        m_active ? STATE_ACTIVE : STATE_NONE,
-        SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
-    ctx->drawText(m_label.c_str(), m_pressed ? m_box.pos + m_box.size / 2 + m_pressed_offset : m_box.pos + m_box.size / 2, m_text_color, m_text_scale, CENTER_X | CENTER_Y);
+    ctx->drawText(m_label.c_str(),
+        m_state & STATE_PRESS ? m_box.pos + m_box.size / 2 + m_pressed_offset
+                              : m_box.pos + m_box.size / 2,
 
+        m_text_color, m_text_scale,
+        CENTER_X | CENTER_Y);
 }

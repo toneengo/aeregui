@@ -2,6 +2,7 @@
 #include "context.h"
 #include "widget.h"
 #include "screen.h"
+#include "util.h"
 
 #include <filesystem>
 
@@ -23,6 +24,7 @@ using namespace AereGui;
 using namespace AereGui::Math;
 
 constexpr int ATLAS_SIZE = 512;
+std::unordered_map<char, AereGui::CharInfo> m_char_map;
 
 void UIContext::render()
 {
@@ -72,6 +74,10 @@ GLContext::GLContext(GLFWwindow* window)
     glNamedBufferStorage(m_ssb.quad.buf, (1 << 16) / 16 * sizeof(Quad), nullptr, GL_DYNAMIC_STORAGE_BIT);
     m_ssb.quad.bind = 1;
 
+    glCreateBuffers(1, &m_ssb.colquad.buf);
+    glNamedBufferStorage(m_ssb.colquad.buf, (1 << 16) / 16 * sizeof(ColQuad), nullptr, GL_DYNAMIC_STORAGE_BIT);
+    m_ssb.colquad.bind = 2;
+
     glfwGetWindowSize(window, &m_screen_size.x, &m_screen_size.y);
     glCreateBuffers(1, &m_ub.screen_size.buf);
     glNamedBufferStorage(m_ub.screen_size.buf, sizeof(int) * 2, &m_screen_size, GL_DYNAMIC_STORAGE_BIT);
@@ -94,6 +100,10 @@ GLContext::GLContext(GLFWwindow* window)
                  VERSION_HEADER + BUFFERS + QUAD9SLICEVERT,
                  VERSION_HEADER + QUADFRAG);
     m_shaders.quad9slice.slices = m_shaders.quad9slice.getLocation("slices");
+
+    createShader(&m_shaders.colquad,
+                 VERSION_HEADER + BUFFERS + COLQUADVERT,
+                 VERSION_HEADER + BASICFRAG);
 }
 
 GLContext::~GLContext()
@@ -105,6 +115,7 @@ void GLContext::bindBuffers()
 {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.text.bind, m_ssb.text.buf);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.quad.bind, m_ssb.quad.buf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.colquad.bind, m_ssb.colquad.buf);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_ub.screen_size.bind, m_ub.screen_size.buf);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_ub.widget_pos.bind, m_ub.widget_pos.buf);
     glBindTextureUnit(m_ta.font.bind, m_ta.font.buf);
@@ -152,7 +163,7 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     {
         for (int idx = 0; idx < numchars; idx++)
         {
-            currx += (m_char_map[text[idx]].advance >> 6) * scale;
+            currx += (m_char_map[text[idx]].advance) * scale;
         }
         pos.x -= currx / 2.0;
     }
@@ -174,7 +185,7 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
             .scale = scale,
         };
 
-        currx += (info.advance >> 6) * scale;
+        currx += (info.advance) * scale;
     }
 
     m_shaders.text.use();
@@ -184,12 +195,24 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     return currx;
 }
 
-void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, int flags)
+void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, int flags)
 {
+    int layer = 0;
+    //#TODO: don't hard code numebrs
+    if (getFlagBit(e->has_state, state))
+    {
+        if (getFlagBit(state, STATE_PRESS) && getFlagBit(e->has_state, STATE_PRESS))
+            layer = 2;
+        else if (getFlagBit(state, STATE_HOVER) && getFlagBit(e->has_state, STATE_HOVER))
+            layer = 1;
+        else if (getFlagBit(e->has_state, STATE_ACTIVE))
+            layer = 3;
+    }
+
     Quad buf = {
         .rect = rect,
         .texBounds = e->bounds,
-        .layer = state,
+        .layer = layer,
     };
 
     glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
@@ -206,12 +229,17 @@ void GLContext::drawTexture(const fbox& rect, TexEntry* e, WidgetState state, in
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
 }
 
-/*
-void GLContext::drawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 col)
+void GLContext::drawQuad(const Math::fbox& rect, const Math::fvec4& col)
 {
+    ColQuad buf = {
+        .rect = rect,
+        .col = col,
+    };
 
+    glNamedBufferSubData(m_ssb.colquad.buf, 0, sizeof(ColQuad), &buf);
+    m_shaders.colquad.use();
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
 }
-*/
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -262,7 +290,7 @@ void GLContext::loadFont(const char* font)
             .layer = currIdx,
             .size = {face->glyph->bitmap.width, face->glyph->bitmap.rows},
             .bearing = {face->glyph->bitmap_left, face->glyph->bitmap_top},
-            .advance = (uint32_t)face->glyph->advance.x,
+            .advance = (uint32_t)face->glyph->advance.x >> 6,
         };
 
         glTextureSubImage3D(m_ta.font.buf, 0, 0, 0, currIdx, fontPx, fontPx, 1, GL_RED, GL_UNSIGNED_BYTE, empty);
@@ -357,17 +385,17 @@ void GLContext::preloadTextures(const char* dir)
         if (pstr.ends_with(".hover.png"))
         {
             m_tex_map[fstr]._hover = im;
-            m_tex_map[fstr].hover = true;
+            m_tex_map[fstr].has_state |= STATE_HOVER;
         }
         else if (pstr.ends_with(".press.png"))
         {
             m_tex_map[fstr]._press = im;
-            m_tex_map[fstr].press = true;
+            m_tex_map[fstr].has_state |= STATE_PRESS;
         }
         else if (pstr.ends_with(".active.png"))
         {
             m_tex_map[fstr]._active = im;
-            m_tex_map[fstr].active = true;
+            m_tex_map[fstr].has_state |= STATE_ACTIVE;
         }
         else
         {

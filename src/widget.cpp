@@ -1,12 +1,47 @@
 #include "widget.h"
+#include "util.h"
 
 using namespace AereGui;
 using namespace Math;
 Widget::Widget()
     : m_visible(true), m_box(0, 0, 1, 1), m_text_color(1, 1, 1, 1),
       m_text_scale(1.0),
-      m_hovered(false), m_pressed(false), m_active(false)
+      m_state(STATE_NONE)
 {
+}
+
+void Widget::onCursorPosEvent(int x, int y)
+{
+    bool enter = contains(fvec2(x, y));
+    setFlagBit(m_state, STATE_HOVER, enter ? 1 : 0);
+    /*
+    if (!enter)
+        setFlagBit(m_state, STATE_PRESS, 0);
+    */
+}
+
+void Widget::onMouseDownEvent(int button, int action)
+{
+    if (m_state & STATE_HOVER)
+    {
+        switch (action)
+        {
+            case (GLFW_PRESS):
+                m_state = m_state | STATE_PRESS;
+                setFlagBit(m_state, STATE_ACTIVE, 1);
+                break;
+            case (GLFW_RELEASE):
+                setFlagBit(m_state, STATE_PRESS, 0);
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        //disable state_active
+        setFlagBit(m_state, STATE_ACTIVE, 0);
+    }
 }
 
 void Widget::draw(GLContext* ctx)

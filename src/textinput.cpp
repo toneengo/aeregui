@@ -1,53 +1,9 @@
 #include "textinput.h"
+#include "util.h"
 #include <chrono>
 
 using namespace AereGui;
 using namespace Math;
-
-TextInput::TextInput(const char* placeholder)
-    : Widget(), m_placeholder(placeholder), m_text_width(0)
-{
-    m_text_scale = 0.4;
-}
-
-void TextInput::onMouseEnterEvent(bool enter)
-{
-    m_hovered = enter ? true : false;
-    m_pressed = enter ? m_pressed : false;
-}
-
-void TextInput::onMouseDownEvent(int button, int action)
-{
-    if (m_hovered)
-    {
-        switch (action)
-        {
-            case (GLFW_PRESS):
-                m_pressed = true;
-            case (GLFW_RELEASE):
-                m_active = true;
-            default:
-                break;
-        }
-    }
-    else
-    {
-        m_active = false;
-    }
-}
-
-void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_BACKSPACE && m_text_buffer.size() > 0 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-    {
-        m_text_buffer.pop_back();
-    }
-}
-
-void TextInput::onCharEvent(unsigned int codepoint)
-{
-    m_text_buffer.push_back(codepoint);
-}
 
 // ##### Timekeeping stuff ##### // 
 using namespace std::chrono_literals;
@@ -55,10 +11,114 @@ namespace stc = std::chrono;
 
 stc::nanoseconds flashTime = stc::milliseconds(1000) / 2;
 stc::nanoseconds accumulator(0);
-
 auto currentTime = stc::steady_clock::now();
-
 bool showTextCursor = true;
+
+TextInput::TextInput(const char* placeholder)
+    : Widget(), m_placeholder(placeholder), m_width(0), m_offsetx(0),
+      m_pos_buf(1, 0), m_text_cur(0),
+      m_sel(-1, -1)
+{
+    m_text_scale = 0.4;
+}
+
+void TextInput::onCursorPosEvent(int x, int y)
+{
+    Widget::onCursorPosEvent(x, y);
+    m_cursor_pos = {x, y};
+
+    if (getFlagBit(m_state, STATE_PRESS) && m_sel.x != -1)
+        m_sel.y = binarySearch(m_pos_buf, float(x) - m_box.x - m_offsetx);
+}
+
+void TextInput::onMouseDownEvent(int button, int action)
+{
+    Widget::onMouseDownEvent(button, action);
+    if (action == GLFW_PRESS)
+    {
+        m_text_cur = binarySearch(m_pos_buf, float(m_cursor_pos.x) - (m_box.x + m_offsetx));
+        m_sel = {m_text_cur, m_text_cur};
+    }
+    if (!getFlagBit(m_state, STATE_ACTIVE))
+        m_sel = {-1, -1};
+}
+
+extern std::unordered_map<char, AereGui::CharInfo> m_char_map;
+inline void TextInput::eraseSelection()
+{
+    float delWidth = 0;
+
+    if (m_sel.y < m_sel.x) std::swap(m_sel.x, m_sel.y);
+    delWidth = m_pos_buf[m_sel.y] - m_pos_buf[m_sel.x];
+    m_text_cur = m_sel.x;
+    m_text_buf.erase(m_text_buf.begin() + m_sel.x, m_text_buf.begin() + m_sel.y);
+    m_pos_buf.erase(m_pos_buf.begin() + m_sel.x + 1, m_pos_buf.begin() + m_sel.y + 1);
+    m_sel = {-1, -1};
+
+    if (m_width > m_box.width)
+        m_offsetx += fmin(delWidth, -m_offsetx);
+
+    m_width -= delWidth;
+
+    for (int i = m_text_cur + 1; i < m_pos_buf.size(); i++)
+        m_pos_buf[i] -= delWidth;
+
+}
+
+void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_BACKSPACE && m_text_buf.size() > 0 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    {
+        if (m_sel.x != m_sel.y) eraseSelection();
+        else if (m_text_cur > 0)
+        {
+            float delWidth = m_char_map[m_text_buf[m_text_cur]].advance * m_text_scale;
+            m_text_cur--;
+            m_text_buf.erase(m_text_buf.begin() + m_text_cur);
+            m_pos_buf.erase(m_pos_buf.begin() + m_text_cur + 1);
+
+            if (m_width > m_box.width)
+                m_offsetx += fmin(delWidth, -m_offsetx);
+
+            m_width -= delWidth;
+
+            for (int i = m_text_cur + 1; i < m_pos_buf.size(); i++)
+                m_pos_buf[i] -= delWidth;
+        }
+    }
+
+    if (key == GLFW_KEY_LEFT && m_text_buf.size() > 0 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    {
+        if (m_text_cur > 0) m_text_cur--;
+        showTextCursor = true;
+    }
+    if (key == GLFW_KEY_RIGHT && m_text_buf.size() > 0 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    {
+        if (m_text_cur < m_pos_buf.size() - 1) m_text_cur++;
+        showTextCursor = true;
+    }
+}
+
+void TextInput::onCharEvent(unsigned int codepoint)
+{
+    if (m_sel.x != m_sel.y) eraseSelection();
+    m_text_buf.insert(m_text_buf.begin() + m_text_cur, codepoint);
+    float advance = m_char_map[codepoint].advance;
+
+    m_width += advance * m_text_scale;
+    m_text_cur++;
+
+    m_pos_buf.insert(m_pos_buf.begin() + m_text_cur,
+                             m_pos_buf[m_text_cur-1] + advance * m_text_scale);
+
+    for (auto it = m_pos_buf.begin() + m_text_cur + 1; it != m_pos_buf.end(); ++it)
+    {
+        *it += advance * m_text_scale;
+    }
+
+    if (m_width > m_box.width)
+        m_offsetx -= advance * m_text_scale;
+}
 
 void TextInput::draw(GLContext* ctx)
 {
@@ -76,16 +136,39 @@ void TextInput::draw(GLContext* ctx)
 
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry,
-        m_active ? STATE_ACTIVE : STATE_NONE, SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
-    if (!m_active && m_text_buffer.size() == 0)
+    ibox ogSx;
+    glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
+    glScissor(m_box.x, ogSx.y + ogSx.height - m_box.y - m_box.height, m_box.width, m_box.height);
+
+    if (m_sel.x != m_sel.y)
+        ctx->drawQuad(
+            fbox(
+                fmin(m_pos_buf[m_sel.x], m_pos_buf[m_sel.y]) +
+                    m_inner_box.x + m_offsetx,
+                m_inner_box.y,
+                abs(m_pos_buf[m_sel.x] - m_pos_buf[m_sel.y]),
+                abs(m_inner_box.height)
+            ),
+            {115/255.0, 164/255.0, 194/255.0, 1.0}
+        );
+
+
+    ctx->drawText(
+        !getFlagBit(m_state, STATE_ACTIVE) && m_text_buf.size() == 0
+        ? m_placeholder.c_str() : m_text_buf.c_str(),
+        {m_inner_box.x + m_offsetx, m_inner_box.y + m_inner_box.size.y / 2},
+        m_text_color,
+        m_text_scale,
+        CENTER_Y
+    );
+
+    if (showTextCursor && getFlagBit(m_state, STATE_ACTIVE))
     {
-        ctx->drawText(m_placeholder.c_str(), m_box.pos + fvec2(0, m_box.size.y / 2), m_text_color, m_text_scale, CENTER_Y);
-        return;
+        ctx->drawText("|",
+            {m_inner_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_inner_box.y + m_inner_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
     }
 
-    float cursorPos = ctx->drawText(m_text_buffer.c_str(), m_box.pos, m_text_color, m_text_scale, false);
-    if (showTextCursor && m_active)
-        ctx->drawText("|", {cursorPos, m_box.y}, m_text_color, m_text_scale, CENTER_Y);
+    glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
 }

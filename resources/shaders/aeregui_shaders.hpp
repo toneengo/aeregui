@@ -23,12 +23,21 @@ struct Quad {
     int layer;
 };
 
+struct ColQuad {
+    vec4 rect;
+    vec4 col;
+};
+
 layout (std430, binding = 0) buffer textBuf {
     Character text[];
 };
 
 layout (std430, binding = 1) buffer quadBuf {
     Quad quads[];
+};
+
+layout (std430, binding = 2) buffer colQuadBuf {
+    ColQuad colquads[];
 };
 
 layout (std140, binding = 0) uniform screenSzBuf {
@@ -92,6 +101,31 @@ void main() {
 
     if (frag.a < 0.1)
         discard;
+}
+)#";
+
+inline const std::string COLQUADVERT = R"#(
+out vec4 col;
+
+void main() {
+    ivec2 quad[6] = ivec2[6](
+        ivec2(0, 0),
+        ivec2(1, 0),
+        ivec2(0, 1),
+        ivec2(1, 1),
+        ivec2(0, 1),
+        ivec2(1, 0)
+    ); 
+
+    vec4 rect = colquads[gl_InstanceID].rect;
+    rect.x -= screenSz.x / 2;
+    rect.y = screenSz.y / 2 - rect.y - rect.w;
+
+    col = colquads[gl_InstanceID].col;
+
+    vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
 
@@ -229,6 +263,17 @@ layout (binding = 1) uniform sampler2DArray texarray;
 
 void main() {
     frag = texture(texarray, vec3(uv, layer));
+    if (frag.a < 0.1)
+        discard;
+}
+)#";
+
+inline const std::string BASICFRAG = R"#(
+in vec4 col;
+out vec4 frag;
+
+void main() {
+    frag = col;
     if (frag.a < 0.1)
         discard;
 }
