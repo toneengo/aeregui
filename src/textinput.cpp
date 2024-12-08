@@ -1,5 +1,6 @@
 #include "textinput.h"
 #include "util.h"
+#include "math.h"
 #include <chrono>
 
 using namespace AereGui;
