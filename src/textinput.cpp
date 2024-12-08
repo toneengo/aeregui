@@ -140,7 +140,7 @@ void TextInput::draw(GLContext* ctx)
 
     ibox ogSx;
     glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
-    glScissor(m_box.x, ogSx.y + ogSx.height - m_box.y - m_box.height, m_box.width, m_box.height);
+    glScissor(m_inner_box.x, ogSx.y + ogSx.height - m_inner_box.y - m_inner_box.height, m_inner_box.width, m_inner_box.height);
 
     if (m_sel.x != m_sel.y)
         ctx->drawQuad(

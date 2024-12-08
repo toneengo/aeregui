@@ -65,6 +65,10 @@ void Screen::framebufferSizeCallback(int width, int height)
 void Screen::draw(GLContext* ctx)
 {
     glEnable(GL_SCISSOR_TEST);
+    ibox ogSx;
+    glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
+    glScissor(m_box.x, m_box.y, m_box.width, m_box.height);
     Widget::draw(ctx);
+    glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
     glDisable(GL_SCISSOR_TEST);
 }
