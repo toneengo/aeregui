@@ -248,8 +248,8 @@ void main() {
 
     layer = quads[gl_InstanceID / 9].layer;
 
-    vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
-    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    vec2 size = rect.zw / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0)) + (widgetPos);
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
