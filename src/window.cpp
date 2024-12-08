@@ -53,7 +53,7 @@ void Window::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9 | BLUR);
+    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
     ctx->drawText(m_title.c_str(), {m_inner_box.x, m_box.y + m_texentry->top * 2/ 2}, m_text_color, m_text_scale, CENTER_Y);
 

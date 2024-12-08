@@ -85,6 +85,9 @@ int main()
     awindow->setPadding(8);
     uictx.addWidget(awindow);
 
+    float xscale, yscale;
+    glfwGetWindowContentScale(window, &xscale, &yscale);
+    printf("%f, %f\n", xscale, yscale);
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);

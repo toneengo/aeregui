@@ -490,7 +490,7 @@ void GLContext::preloadTextures(const char* dir)
     }
 
     glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_ta.texture.buf);
-    glTextureStorage3D(m_ta.texture.buf, 1, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, 128);
+    glTextureStorage3D(m_ta.texture.buf, 1, GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE, 4);
 
     glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 0, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
     glTextureSubImage3D(m_ta.texture.buf, 0, 0, 0, 1, ATLAS_SIZE, ATLAS_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, hover);
