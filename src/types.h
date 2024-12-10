@@ -366,5 +366,4 @@ struct RenderData {
     std::vector<Character> text;
 };
 
-
 NAMESPACE_END(AereGui);

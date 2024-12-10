@@ -283,7 +283,7 @@ void GLContext::loadFont(const char* font)
 
         if (c == 'a')
         {
-            m_font_height = (face->glyph->metrics.height - face->glyph->metrics.vertBearingY) >> 6;
+            m_font_height = (face->glyph->metrics.height) >> 6;
         }
 
         m_char_map[c] = {
