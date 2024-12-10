@@ -115,7 +115,7 @@ int main()
 
     //background
     int width, height, channels;
-    unsigned char* im = stbi_load("resources/worstwallpaper.png", &width, &height, &channels, 4);
+    unsigned char* im = stbi_load("resources/windows.jpg", &width, &height, &channels, 4);
 
     GLuint bg;
     glCreateTextures(GL_TEXTURE_2D, 1, &bg);
@@ -141,6 +141,7 @@ void main() {
     ); 
     uv = quad[gl_VertexID];
     vec2 pos = quad[gl_VertexID] * 2 - 1;
+    pos.y *= -1;
     gl_Position = vec4(pos, 0.0, 1.0);
 }
     )#";
