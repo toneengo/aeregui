@@ -119,13 +119,14 @@ void main() {
     ); 
 
     vec4 rect = colquads[gl_InstanceID].rect;
+    rect.xy += widgetPos;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
     col = colquads[gl_InstanceID].col;
 
     vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
-    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";

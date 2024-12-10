@@ -13,6 +13,11 @@ class Screen : public Widget
     friend class GLContext;
 public:
     Screen(GLContext* gl_ctx);
+
+    void onCursorEnterEvent() {};
+    void onCursorExitEvent() {};
+    void onMouseDownEvent(int button, int action) {};
+
     void draw(GLContext* ctx);
     void cursorPosCallback(double x, double y);
     void mouseButtonCallback(int button, int action);

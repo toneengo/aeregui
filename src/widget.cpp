@@ -23,16 +23,25 @@ void Widget::onCursorPosEvent(int x, int y)
 
 void Widget::onCursorEnterEvent()
 {
+    if (m_parent)
+        m_parent->onCursorEnterEvent();
+
     setFlagBit(m_state, STATE_HOVER, 1);
 }
 
 void Widget::onCursorExitEvent()
 {
+    if (m_parent)
+        m_parent->onCursorExitEvent();
+    
     setFlagBit(m_state, STATE_HOVER, 0);
 }
 
 void Widget::onMouseDownEvent(int button, int action)
 {
+    if (m_parent)
+        m_parent->onMouseDownEvent(button, action);
+
     if (action == GLFW_PRESS)
     {
         if (m_state & STATE_HOVER)

@@ -74,7 +74,7 @@ void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
             m_text_buf.erase(m_text_buf.begin() + m_text_cur);
             m_pos_buf.erase(m_pos_buf.begin() + m_text_cur + 1);
 
-            if (m_width > m_box.width)
+            if (m_width > m_inner_box.width)
                 m_offsetx += fmin(delWidth, -m_offsetx);
 
             m_width -= delWidth;
@@ -117,7 +117,7 @@ void TextInput::onCharEvent(unsigned int codepoint)
         *it += advance * m_text_scale;
     }
 
-    if (m_width > m_box.width)
+    if (m_width > m_inner_box.width)
         m_offsetx -= advance * m_text_scale;
 }
 
@@ -140,10 +140,15 @@ void TextInput::draw(GLContext* ctx)
     ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
     ibox ogSx;
-    //glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
-    //glScissor(m_inner_box.x, ogSx.y + ogSx.height - m_inner_box.y - m_inner_box.height, m_inner_box.width, m_inner_box.height);
+    glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
+
+    fvec2 parentPos = ctx->getWidgetPos();
+    glScissor(parentPos.x + m_inner_box.x,
+        ogSx.y + ogSx.height - parentPos.y - m_inner_box.y - m_inner_box.height,
+        m_inner_box.width, m_inner_box.height);
 
     if (m_sel.x != m_sel.y)
+        //#TODO: dont use static colour
         ctx->drawQuad(
             fbox(
                 fmin(m_pos_buf[m_sel.x], m_pos_buf[m_sel.y]) +
@@ -171,5 +176,5 @@ void TextInput::draw(GLContext* ctx)
             {m_inner_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_inner_box.y + m_inner_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
     }
 
-    //glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
+    glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
 }

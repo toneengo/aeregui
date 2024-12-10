@@ -62,6 +62,7 @@ public:
     void drawFromRenderData(const RenderData& data);
     void bindBuffers();
     void setWidgetPos(Math::fvec2 pos);
+    Math::fvec2 getWidgetPos() { return m_widget_pos; };
 
     void setScreenSize(int width, int height);
     Math::ivec2 getScreenSize() { return m_screen_size; };
