@@ -4,7 +4,6 @@ inspired by: nanogui, imgui
 
 # Build
 ## Dependencies
-- glm
 - Ninja (optional)
 ## Windows
 ### CMake (Ninja)
