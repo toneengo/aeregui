@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "widget.h"
+#include <chrono>
 
 NAMESPACE_BEGIN(AereGui);
 
@@ -33,7 +34,9 @@ protected:
 
     Math::fvec4 m_padding;
 private:
+    std::chrono::nanoseconds accumulator;
     inline void eraseSelection();
+    bool showTextCursor;
 };
 
 NAMESPACE_END(AereGui);

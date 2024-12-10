@@ -67,6 +67,7 @@ void main() {
     ); 
 
     vec4 rect = text[gl_InstanceID].rect;
+    rect.xy += widgetPos;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
@@ -81,8 +82,8 @@ void main() {
     layer = text[gl_InstanceID].layer;
     colour = text[gl_InstanceID].col;
 
-    vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0) * scale;
-    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    vec2 size = rect.zw / round(vec2(screenSz.x/2.0, screenSz.y/2.0)) * scale;
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
@@ -146,6 +147,7 @@ void main() {
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
     vec4 rect = quads[gl_InstanceID].rect;
+    rect.xy += widgetPos;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
@@ -159,7 +161,7 @@ void main() {
     layer = quads[gl_InstanceID].layer;
 
     vec2 size = (texBounds.zw * pixelSz) / vec2(screenSz.x/2.0, screenSz.y/2.0);
-    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0) + (widgetPos);
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
@@ -191,6 +193,7 @@ void main() {
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
     vec4 rect = quads[gl_InstanceID / 9].rect;
+    rect.xy += widgetPos;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
@@ -249,7 +252,7 @@ void main() {
     layer = quads[gl_InstanceID / 9].layer;
 
     vec2 size = rect.zw / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
-    vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0)) + (widgetPos);
+    vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";

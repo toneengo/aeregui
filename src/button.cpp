@@ -15,6 +15,13 @@ void Button::onMouseEnterEvent(bool enter)
 }
 */
 
+void Button::onCursorPosEvent(int x, int y)
+{
+    Widget::onCursorPosEvent(x, y);
+    // I don't want it to appear pressed when the mouse is dragged outside
+    if (!getFlagBit(m_state, STATE_HOVER)) setFlagBit(m_state, STATE_PRESS, 0);
+}
+
 void Button::onMouseDownEvent(int button, int action)
 {
     Widget::onMouseDownEvent(button, action);

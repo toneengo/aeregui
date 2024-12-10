@@ -47,6 +47,13 @@ struct vec2
         return val;
     }
 
+    template <typename v>
+    void operator-=(const v& vec)
+    {
+        x -= vec.x;
+        y -= vec.y;
+    }
+
     //#TODO: test if othe way works?
     template <typename v>
     vec2<T> operator+(const v& vec) const
@@ -263,7 +270,7 @@ struct box
         x += _x;
         y += _y;
     }
-    void translate(vec2<T> _vec)
+    inline void translate(vec2<T> _vec)
     {
         x += _vec.x;
         y += _vec.y;

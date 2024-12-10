@@ -24,6 +24,9 @@ private:
     Math::ivec2 m_cursor_pos;
     Widget* m_hovered_widget = nullptr;
     Widget* m_active_widget = nullptr;
+    Math::ivec2 m_active_widget_pos;
+
+    bool m_drag_active = false;
 };
 
 NAMESPACE_END(AereGui);

@@ -13,12 +13,22 @@ Widget::Widget()
 void Widget::onCursorPosEvent(int x, int y)
 {
     m_cursor_pos = {x, y};
-    bool enter = contains(fvec2(x, y));
-    setFlagBit(m_state, STATE_HOVER, enter ? 1 : 0);
+    if (!contains(fvec2(x, y) + m_box.pos))
+        setFlagBit(m_state, STATE_HOVER, 0);
     /*
     if (!enter)
         setFlagBit(m_state, STATE_PRESS, 0);
     */
+}
+
+void Widget::onCursorEnterEvent()
+{
+    setFlagBit(m_state, STATE_HOVER, 1);
+}
+
+void Widget::onCursorExitEvent()
+{
+    setFlagBit(m_state, STATE_HOVER, 0);
 }
 
 void Widget::onMouseDownEvent(int button, int action)
@@ -43,13 +53,14 @@ void Widget::onMouseDownEvent(int button, int action)
 void Widget::draw(GLContext* ctx)
 {
     if (!m_visible) return;
-    //ctx->setWidgetPos(m_pos);
+    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos);
     //ctx->drawFromRenderData(m_render_data);
     for (auto& w : m_children)
     {
         if (!m_visible) continue;
         w->draw(ctx);
     }
+    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos);
 }
 
 bool Widget::contains(const Math::fvec2& pos)
@@ -81,13 +92,15 @@ void Widget::addChild(Widget* widget)
     widget->m_parent = this;
 }
 
-Widget* Widget::findWidget(const fvec2& pos)
+//changes pos
+Widget* Widget::findWidget(ivec2& pos)
 {
+    pos -= m_box.pos;
     for (auto it = m_children.rbegin(); it != m_children.rend(); ++it)
     {
         Widget* child = *it;
-        if (child->visible() && child->contains(pos + m_box.pos))
-            return child->findWidget(pos + m_box.pos);
+        if (child->visible() && child->contains(pos))
+            return child->findWidget(pos);
     }
-    return contains(pos) && m_visible ? this : nullptr;
+    return /*contains(pos) &&*/ m_visible ? this : nullptr;
 }

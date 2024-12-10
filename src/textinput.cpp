@@ -11,13 +11,11 @@ using namespace std::chrono_literals;
 namespace stc = std::chrono;
 
 stc::nanoseconds flashTime = stc::milliseconds(1000) / 2;
-stc::nanoseconds accumulator(0);
 auto currentTime = stc::steady_clock::now();
-bool showTextCursor = true;
 
 TextInput::TextInput(const char* placeholder)
     : Widget(), m_placeholder(placeholder), m_width(0), m_offsetx(0),
-      m_pos_buf(1, 0), m_text_cur(0),
+      m_pos_buf(1, 0), m_text_cur(0), showTextCursor(true), accumulator(0),
       m_sel(-1, -1)
 {
     m_text_scale = 0.4;
@@ -26,9 +24,8 @@ TextInput::TextInput(const char* placeholder)
 void TextInput::onCursorPosEvent(int x, int y)
 {
     Widget::onCursorPosEvent(x, y);
-
     if (getFlagBit(m_state, STATE_PRESS) && m_sel.x != -1)
-        m_sel.y = binarySearch(m_pos_buf, float(x) - m_box.x - m_offsetx);
+        m_sel.y = binarySearch(m_pos_buf, x - m_offsetx);
 }
 
 void TextInput::onMouseDownEvent(int button, int action)
@@ -36,7 +33,7 @@ void TextInput::onMouseDownEvent(int button, int action)
     Widget::onMouseDownEvent(button, action);
     if (action == GLFW_PRESS)
     {
-        m_text_cur = binarySearch(m_pos_buf, float(m_cursor_pos.x) - (m_box.x + m_offsetx));
+        m_text_cur = binarySearch(m_pos_buf, m_cursor_pos.x - m_offsetx);
         m_sel = {m_text_cur, m_text_cur};
     }
     if (!getFlagBit(m_state, STATE_ACTIVE))
@@ -72,8 +69,8 @@ void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
         if (m_sel.x != m_sel.y) eraseSelection();
         else if (m_text_cur > 0)
         {
-            float delWidth = m_char_map[m_text_buf[m_text_cur]].advance * m_text_scale;
             m_text_cur--;
+            float delWidth = m_char_map[m_text_buf[m_text_cur]].advance * m_text_scale;
             m_text_buf.erase(m_text_buf.begin() + m_text_cur);
             m_pos_buf.erase(m_pos_buf.begin() + m_text_cur + 1);
 
@@ -101,7 +98,11 @@ void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
 
 void TextInput::onCharEvent(unsigned int codepoint)
 {
-    if (m_sel.x != m_sel.y) eraseSelection();
+    if (m_sel.x != m_sel.y) {
+        eraseSelection();
+        return;
+    }
+
     m_text_buf.insert(m_text_buf.begin() + m_text_cur, codepoint);
     float advance = m_char_map[codepoint].advance;
 
@@ -139,8 +140,8 @@ void TextInput::draw(GLContext* ctx)
     ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
 
     ibox ogSx;
-    glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
-    glScissor(m_inner_box.x, ogSx.y + ogSx.height - m_inner_box.y - m_inner_box.height, m_inner_box.width, m_inner_box.height);
+    //glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
+    //glScissor(m_inner_box.x, ogSx.y + ogSx.height - m_inner_box.y - m_inner_box.height, m_inner_box.width, m_inner_box.height);
 
     if (m_sel.x != m_sel.y)
         ctx->drawQuad(
@@ -158,7 +159,7 @@ void TextInput::draw(GLContext* ctx)
     ctx->drawText(
         !getFlagBit(m_state, STATE_ACTIVE) && m_text_buf.size() == 0
         ? m_placeholder.c_str() : m_text_buf.c_str(),
-        {m_inner_box.x + m_offsetx, m_inner_box.y + m_inner_box.size.y / 2},
+        {m_inner_box.x + m_offsetx, m_inner_box.y + m_inner_box.height / 2},
         m_text_color,
         m_text_scale,
         CENTER_Y
@@ -170,5 +171,5 @@ void TextInput::draw(GLContext* ctx)
             {m_inner_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_inner_box.y + m_inner_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
     }
 
-    glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
+    //glScissor(ogSx.x, ogSx.y, ogSx.width, ogSx.height);
 }

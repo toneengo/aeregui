@@ -13,13 +13,13 @@ public:
     Widget();
     virtual void draw(GLContext* ctx);
 
-    void setPos(Math::fvec2 pos) { m_inner_box.translate(pos - m_box.pos); m_box.pos = pos; };
-    void setSize(Math::fvec2 size) { m_inner_box.size = m_inner_box.size + (size - m_box.size); m_box.size = size; };
+    inline void setPos(Math::fvec2 pos) { m_inner_box.translate(pos - m_box.pos); m_box.pos = pos; };
+    inline void setSize(Math::fvec2 size) { m_inner_box.size = m_inner_box.size + (size - m_box.size); m_box.size = size; };
     void setPadding(float px) { m_inner_box = Math::fbox::expand(m_box, -px); };
 
     virtual void addChild(Widget * widget);
 
-    Widget* findWidget(const Math::fvec2& pos);
+    Widget* findWidget(Math::ivec2& pos);
     bool contains(const Math::fvec2& pos);
     bool visible() { return m_visible; };
 
@@ -28,6 +28,8 @@ public:
     virtual void onFrameResizeEvent(int button, int action) {};
     virtual void onMouseDownEvent(int button, int action);
     virtual void onCursorPosEvent(int x, int y);
+    virtual void onCursorEnterEvent();
+    virtual void onCursorExitEvent();
     virtual void onKeyEvent(int key, int scancode, int action, int mods) {};
     virtual void onCharEvent(unsigned int codepoint) {};
 

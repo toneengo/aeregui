@@ -72,6 +72,7 @@ public:
     int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags);
     void drawTexture(const Math::fbox& rect, TexEntry* e, int state, int flags);
     void drawQuad(const Math::fbox& rect, const Math::fvec4& col);
+    Math::fvec2 m_widget_pos;
 private:
     // Buffer name/Buffer binding pair
     struct nameIdx

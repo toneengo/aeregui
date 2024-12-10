@@ -12,17 +12,28 @@ Screen::Screen(GLContext* gl_ctx)
 
 void Screen::cursorPosCallback(double x, double y)
 {
+    if (m_drag_active)
+    {
+        m_active_widget->onCursorPosEvent(x - m_active_widget_pos.x, y - m_active_widget_pos.y);
+        return;
+    }
+
     m_cursor_pos = ivec2(x, y);
-    Widget* w = findWidget(m_cursor_pos);
+    ivec2 temp_pos = m_cursor_pos;
+    Widget* w = findWidget(temp_pos);
+    m_active_widget_pos = m_cursor_pos - temp_pos;
 
     if (w != m_hovered_widget && m_hovered_widget)
-        m_hovered_widget->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
+    {
+        m_hovered_widget->onCursorExitEvent();
+        if (w) w->onCursorEnterEvent();
+    }
 
-    if (w != nullptr)
-        w->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
+    if (w)
+        w->onCursorPosEvent(temp_pos.x, temp_pos.y);
     
-    if (m_active_widget != nullptr)
-        m_active_widget->onCursorPosEvent(m_cursor_pos.x, m_cursor_pos.y);
+    if (m_active_widget != nullptr && m_active_widget != m_hovered_widget)
+        m_active_widget->onCursorPosEvent(temp_pos.x, temp_pos.y);
 
     m_hovered_widget = w;
 }
@@ -36,9 +47,15 @@ void Screen::mouseButtonCallback(int button, int action)
     if (action == GLFW_PRESS)
     {
         if (m_active_widget != m_hovered_widget && m_hovered_widget)
+        {
             m_hovered_widget->onMouseDownEvent(button, action);
-
-        m_active_widget = m_hovered_widget;
+            m_active_widget = m_hovered_widget;
+        }
+        m_drag_active = true;
+    }
+    else
+    {
+        m_drag_active = false;
     }
 }
 

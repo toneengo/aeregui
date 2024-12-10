@@ -85,6 +85,19 @@ int main()
     awindow->setPadding(8);
     uictx.addWidget(awindow);
 
+    Widget * cinput = new TextInput("Enter text:");
+    cinput->assignTexture("textinput");
+    cinput->setPos({10, 40});
+    cinput->setSize({250, 32});
+    cinput->setPadding(4);
+    awindow->addChild(cinput);
+
+    Widget * cb = new Button("send!! (not real)", [](){printf("sent lololo\n");});
+    cb->assignTexture("button");
+    cb->setPos({10, 80});
+    cb->setSize({200, 32});
+    awindow->addChild(cb);
+
     float xscale, yscale;
     glfwGetWindowContentScale(window, &xscale, &yscale);
     printf("%f, %f\n", xscale, yscale);

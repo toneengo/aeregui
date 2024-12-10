@@ -137,6 +137,7 @@ void GLContext::drawFromRenderData(const RenderData& data)
 
 void GLContext::setWidgetPos(Math::fvec2 pos)
 {
+    m_widget_pos = pos;
     glNamedBufferSubData(m_ub.widget_pos.buf, 0, sizeof(float) * 2, &pos );
 }
 
@@ -155,9 +156,8 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
 
     float currx = 0;
 
-    //#TODO: REMOVE THE TIMES TWOS!!!!
     if (flags & CENTER_Y)
-        pos.y -= m_font_height * 2 / 2.0 * scale;
+        pos.y -= m_font_height / 2.0 * scale;
 
     if (flags & CENTER_X)
     {
@@ -176,7 +176,7 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
         buf[idx] = {
             .rect = fbox(
                 currx + info.bearing.x * scale,
-                pos.y - info.bearing.y * scale + m_font_height * 2 * scale,
+                pos.y - info.bearing.y * scale + m_font_height * scale,
                 info.size.x * scale,
                 info.size.y * scale
             ),

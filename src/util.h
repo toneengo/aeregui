@@ -12,8 +12,8 @@
 
 #include <vector>
 //search for closest number in a sorted unique array, returns (left) index
-template <typename T>
-inline int binarySearch(const std::vector<T>& arr, const T val)
+template <typename T, typename U>
+inline int binarySearch(const std::vector<T>& arr, const U val)
 {
     int l = 0, r = arr.size() - 1;
 
