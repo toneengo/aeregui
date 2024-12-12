@@ -5,7 +5,7 @@ using namespace AereGui;
 using namespace Math;
 Widget::Widget()
     : m_visible(true), m_box(0, 0, 1, 1), m_text_color(1, 1, 1, 1),
-      m_text_scale(1.0),
+      m_text_scale(1.0), m_render_flags(SLICE_9),
       m_state(STATE_NONE)
 {
 }
@@ -88,6 +88,7 @@ void Widget::assignTexture(std::string tex)
         exit(1);
     }
 
+    m_texture_name = tex;
     TexEntry* e = &m_tex_map[tex];
     m_texentry = e;
 

@@ -15,13 +15,12 @@ void Window::onCursorPosEvent(int x, int y)
     Widget::onCursorPosEvent(x, y);
     if (m_moving)
     {
-        m_box.x = x - m_cursor_offset.x;
-        m_box.y = y - m_cursor_offset.y;
+        setPos(fvec2(x - m_cursor_offset.x, y - m_cursor_offset.y));
         setFlagBit(m_state, STATE_HOVER, 1);
     }
     else if (m_resizing)
     {
-        m_box.size = m_cursor_pos + m_cursor_offset;
+        setSize(m_cursor_pos + m_cursor_offset);
         setFlagBit(m_state, STATE_HOVER, 1);
     }
 }

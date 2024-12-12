@@ -5,7 +5,7 @@ using namespace Math;
 
 extern std::unordered_map<std::string, TexEntry> m_tex_map;
 ListItem::ListItem(const char* image, const char* label)
-    : m_label(label)
+    : Widget(), m_label(label)
 {
     if (!m_tex_map.contains(image))
     {

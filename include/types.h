@@ -158,6 +158,13 @@ struct vec4
           w(static_cast<T>(_w))
     {}
 
+    vec4(T _val)
+        : x(static_cast<T>(_val)),
+          y(static_cast<T>(_val)),
+          z(static_cast<T>(_val)),
+          w(static_cast<T>(_val))
+    {}
+
     vec4(const vec4<T>& _v)
         : x(static_cast<T>(_v.x)),
           y(static_cast<T>(_v.y)),

@@ -161,7 +161,7 @@ void main() {
 
     layer = quads[gl_InstanceID].layer;
 
-    vec2 size = (texBounds.zw * pixelSz) / vec2(screenSz.x/2.0, screenSz.y/2.0);
+    vec2 size = (rect.zw) / vec2(screenSz.x/2.0, screenSz.y/2.0);
     vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
     gl_Position = vec4(pos, 0.0, 1.0);
 }

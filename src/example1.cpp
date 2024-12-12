@@ -111,21 +111,38 @@ int main()
     row1->addCol(button, 150);
     row1->setPos({10, 50});
 
-    Widget * window2 = new Window("A simple grid list");
+    Widget * window2 = new Window("Some boxes");
     window2->assignTexture("window");
-    window2->setSize({400, 400});
+    window2->setSize({800, 400});
     window2->setPos({200, 100});
     window2->setPadding(8);
 
+    Row * window2row = new Row(352);
+    window2->addChild(window2row);
+    window2row->setPos({0, 32});
+
+    Box * box1 = new Box();
+    box1->assignTexture("box1");
+    window2row->addCol(box1, 300);
+
+    Box * box2 = new Box();
+    box2->assignTexture("box2");
+    box2->setFlags(0);
+    window2row->addCol(box2, 500);
+
     Row * row2 = new Row(40);
-    window2->addChild(row2);
-    ListItem * item1 = new ListItem("tennis", "A tennis ball");
-    item1->assignTexture("listitem");
-    ListItem * item2 = new ListItem("lollipop", "A weird lollipop");
-    item2->assignTexture("listitem");
-    row2->addCol(item1, 60);
-    row2->addCol(item2, 100);
-    row2->setPos({10, 50});
+    box2->addChild(row2);
+    for (int i = 0; i < 15; i++)
+    {
+        ListItem* item1 = new ListItem("lollipop", "A weird lollipop");
+        item1->assignTexture("listitem");
+        row2->addCol(item1, 72);
+
+        ListItem* item2 = new ListItem("tennis", "A tennis ball");
+        item2->assignTexture("listitem");
+        row2->addCol(item2, 40);
+    }
+    //row2->setPos({10, 50}); // why does this fk it up?
 
     uictx.addWidget(window2);
 

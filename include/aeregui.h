@@ -9,3 +9,4 @@
 #include "window.h"
 #include "row.h"
 #include "listitem.h"
+#include "box.h"

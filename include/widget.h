@@ -13,13 +13,15 @@ public:
     Widget();
     virtual void draw(GLContext* ctx);
 
-    inline void setPos(Math::fvec2 pos) { m_inner_box.translate(pos - m_box.pos); m_box.pos = pos; };
-    inline void setSize(Math::fvec2 size) { m_inner_box.size = m_inner_box.size + (size - m_box.size); m_box.size = size; };
+    inline void setPos(Math::fvec2 pos) { m_box.pos = pos;
+                                          m_inner_box = Math::fbox::pad(m_box, m_padding); };
+    inline void setSize(Math::fvec2 size) { m_box.size = size; 
+                                            m_inner_box = Math::fbox::pad(m_box, m_padding); };
 
     inline Math::fvec2 getPos() { return m_box.pos; };
     inline Math::fvec2 getSize() { return m_box.size; };
 
-    void setPadding(float px) { m_inner_box = Math::fbox::expand(m_box, -px); };
+    void setPadding(float px) { m_padding = Math::fvec4(px); m_inner_box = Math::fbox::pad(m_box, m_padding); };
 
     virtual void addChild(Widget * widget);
 
@@ -27,6 +29,7 @@ public:
     bool contains(const Math::fvec2& pos);
     bool visible() { return m_visible; };
 
+    void setFlags(unsigned int flags) {  m_render_flags = flags; };
     void assignTexture(std::string tex);
 
     void setActiveChild(Widget* widget) { if (m_parent) m_parent->setActiveChild(widget);
@@ -45,6 +48,8 @@ protected:
     std::vector<Widget*> m_children;
     RenderData m_render_data;
 
+    std::string m_texture_name;
+
     bool m_visible;
 
     unsigned int m_state;
@@ -62,7 +67,9 @@ protected:
 
     float m_text_scale;
 
-    Widget* m_active_child;
+    Widget* m_active_child = nullptr;
+
+    unsigned int m_render_flags;
 
     bool m_inherit_pos;
     bool m_inherit_size;
