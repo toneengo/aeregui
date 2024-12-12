@@ -7,3 +7,5 @@
 #include "screen.h"
 #include "textinput.h"
 #include "window.h"
+#include "row.h"
+#include "listitem.h"

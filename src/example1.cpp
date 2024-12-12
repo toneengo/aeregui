@@ -67,9 +67,11 @@ int main()
         }
     );
     button->assignTexture("button");
+    /*
     button->setPos({200, 200});
     button->setSize({200, 50});
     uictx.addWidget(button);
+    */
 
     Widget * input = new TextInput("Enter text here :-)");
     input->assignTexture("textinput");
@@ -78,25 +80,54 @@ int main()
     input->setPadding(4);
     uictx.addWidget(input);
 
-    Widget * awindow = new Window("My amazing gui window!!!!");
-    awindow->assignTexture("window");
-    awindow->setSize({400, 200});
-    awindow->setPos({400, 500});
-    awindow->setPadding(8);
-    uictx.addWidget(awindow);
+    Widget * window1 = new Window("My amazing gui window!!!!");
+    window1->assignTexture("window");
+    window1->setSize({400, 200});
+    window1->setPos({400, 600});
+    window1->setPadding(8);
+    uictx.addWidget(window1);
 
     Widget * cinput = new TextInput("Enter text:");
     cinput->assignTexture("textinput");
+    cinput->setPadding(4);
+    /*
     cinput->setPos({10, 40});
     cinput->setSize({250, 32});
-    cinput->setPadding(4);
-    awindow->addChild(cinput);
+    window1->addChild(cinput);
+    */
 
     Widget * cb = new Button("send!! (not real)", [](){printf("sent lololo\n");});
     cb->assignTexture("button");
+    /*
     cb->setPos({10, 80});
     cb->setSize({200, 32});
-    awindow->addChild(cb);
+    window1->addChild(cb);
+    */
+
+    Row * row1 = new Row(50);
+    window1->addChild(row1);
+    row1->addCol(cb, 100);
+    row1->addCol(cinput, 200);
+    row1->addCol(button, 150);
+    row1->setPos({10, 50});
+
+    Widget * window2 = new Window("A simple grid list");
+    window2->assignTexture("window");
+    window2->setSize({400, 400});
+    window2->setPos({200, 100});
+    window2->setPadding(8);
+
+    Row * row2 = new Row(40);
+    window2->addChild(row2);
+    ListItem * item1 = new ListItem("tennis", "A tennis ball");
+    item1->assignTexture("listitem");
+    ListItem * item2 = new ListItem("lollipop", "A weird lollipop");
+    item2->assignTexture("listitem");
+    row2->addCol(item1, 60);
+    row2->addCol(item2, 100);
+    row2->setPos({10, 50});
+
+    uictx.addWidget(window2);
 
     float xscale, yscale;
     glfwGetWindowContentScale(window, &xscale, &yscale);

@@ -15,6 +15,10 @@ public:
 
     inline void setPos(Math::fvec2 pos) { m_inner_box.translate(pos - m_box.pos); m_box.pos = pos; };
     inline void setSize(Math::fvec2 size) { m_inner_box.size = m_inner_box.size + (size - m_box.size); m_box.size = size; };
+
+    inline Math::fvec2 getPos() { return m_box.pos; };
+    inline Math::fvec2 getSize() { return m_box.size; };
+
     void setPadding(float px) { m_inner_box = Math::fbox::expand(m_box, -px); };
 
     virtual void addChild(Widget * widget);
@@ -25,6 +29,9 @@ public:
 
     void assignTexture(std::string tex);
 
+    void setActiveChild(Widget* widget) { if (m_parent) m_parent->setActiveChild(widget);
+                                          m_active_child = widget; };
+
     virtual void onFrameResizeEvent(int button, int action) {};
     virtual void onMouseDownEvent(int button, int action);
     virtual void onCursorPosEvent(int x, int y);
@@ -34,7 +41,7 @@ public:
     virtual void onCharEvent(unsigned int codepoint) {};
 
 protected:
-    Widget* m_parent;
+    Widget* m_parent = nullptr;
     std::vector<Widget*> m_children;
     RenderData m_render_data;
 
@@ -54,6 +61,8 @@ protected:
     Math::ivec2 m_cursor_pos;
 
     float m_text_scale;
+
+    Widget* m_active_child;
 
     bool m_inherit_pos;
     bool m_inherit_size;
