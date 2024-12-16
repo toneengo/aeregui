@@ -26,39 +26,6 @@ using namespace AereGui::Math;
 constexpr int ATLAS_SIZE = 512;
 std::unordered_map<char, AereGui::CharInfo> m_char_map;
 
-void UIContext::render()
-{
-    m_gl_context->bindBuffers();
-    m_screen->draw(m_gl_context);
-}
-
-UIContext::UIContext(GLFWwindow* window)
-{
-    m_gl_context = new GLContext(window);
-    m_screen = new Screen(m_gl_context);
-    m_screen->setPos(glm::vec2(0));
-}
-
-void UIContext::addWidget(Widget* widget)
-{
-    m_screen->addChild(widget);
-}
-
-void UIContext::loadFont(const char* font)
-{
-    m_gl_context->loadFont(font);
-}
-
-void UIContext::preloadTextures(const char* dir)
-{
-    m_gl_context->preloadTextures(dir);
-}
-
-UIContext::~UIContext()
-{
-    delete m_gl_context;
-}
-
 GLContext::GLContext(GLFWwindow* window)
     : fontPx(0.0)
 {
@@ -78,10 +45,18 @@ GLContext::GLContext(GLFWwindow* window)
     glNamedBufferStorage(m_ssb.colquad.buf, (1 << 16) / 16 * sizeof(ColQuad), nullptr, GL_DYNAMIC_STORAGE_BIT);
     m_ssb.colquad.bind = 2;
 
+    glfwGetWindowContentScale(window, &m_window_scale, nullptr);
     glfwGetWindowSize(window, &m_screen_size.x, &m_screen_size.y);
+    m_screen_size.x *= m_window_scale;
+    m_screen_size.y *= m_window_scale;
+    glViewport(0, 0, m_screen_size.x, m_screen_size.y);
+
     glCreateBuffers(1, &m_ub.screen_size.buf);
     glNamedBufferStorage(m_ub.screen_size.buf, sizeof(int) * 2, &m_screen_size, GL_DYNAMIC_STORAGE_BIT);
     m_ub.screen_size.bind = 0;
+
+    glNamedBufferSubData(m_ub.screen_size.buf, 0, sizeof(int) * 2, &m_screen_size);
+
 
     float widgetPos[2] = { 0.f, 0.f };
     glCreateBuffers(1, &m_ub.widget_pos.buf);

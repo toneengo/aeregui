@@ -7,11 +7,14 @@ Screen::Screen(GLContext* gl_ctx)
     : Widget(), m_gl_context(gl_ctx)
 {
     m_box.pos = {0.0, 0.0};
-    m_box.size = gl_ctx->getScreenSize();
+    m_box.size = gl_ctx->m_screen_size;
+    m_window_scale = gl_ctx->m_window_scale;
 }
 
 void Screen::cursorPosCallback(double x, double y)
 {
+    x *= m_window_scale;
+    y *= m_window_scale;
     if (m_drag_active)
     {
         m_active_widget->onCursorPosEvent(x - m_active_widget_pos.x, y - m_active_widget_pos.y);

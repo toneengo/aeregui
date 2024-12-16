@@ -23,6 +23,21 @@ struct vec2
           y(static_cast<T>(_xy.y))
     {};
 
+    vec2(const int _x)
+        : x(static_cast<T>(_x)),
+          y(static_cast<T>(_x))
+    {};
+
+    vec2(const float _x)
+        : x(static_cast<T>(_x)),
+          y(static_cast<T>(_x))
+    {};
+
+    vec2(const double _x)
+        : x(static_cast<T>(_x)),
+          y(static_cast<T>(_x))
+    {};
+
     template <typename v>
     vec2(const v& _xy)
         : x(static_cast<T>(_xy.x)),

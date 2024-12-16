@@ -27,35 +27,9 @@ enum AereGui_state : uint8_t
     STATE_PRESS  = 0b00001000,
 };
 
-class Widget;
-class Screen;
-class GLContext;
-
-// state/texture layer enum
-class UIContext
-{
-public:
-    UIContext(GLFWwindow* window);
-    ~UIContext();
-
-    // Renders all GUI elements in 'data'.
-    void render();
-
-    // Clears render data.
-    void clear();
-
-    void addWidget(Widget* widget);
-
-    void loadFont(const char* font);
-    Screen* screenPtr() { return m_screen; };
-    void preloadTextures(const char* dir);
-private:
-    Screen* m_screen;
-    GLContext* m_gl_context;
-};
-
 class GLContext
 {
+friend class Screen;
 public:
     GLContext(GLFWwindow* window);
     ~GLContext();
@@ -74,7 +48,7 @@ public:
     void drawTexture(const Math::fbox& rect, TexEntry* e, int state, int flags);
     void drawQuad(const Math::fbox& rect, const Math::fvec4& col);
     Math::fvec2 m_widget_pos;
-private:
+protected:
     // Buffer name/Buffer binding pair
     struct nameIdx
     {
@@ -114,6 +88,8 @@ private:
 
     float fontPx;
     Math::ivec2 m_screen_size;
+
+    float m_window_scale;
 
     int m_pixel_size = 2;
 

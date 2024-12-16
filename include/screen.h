@@ -23,6 +23,7 @@ public:
 private:
     GLContext* m_gl_context;
     Math::ivec2 m_cursor_pos;
+    float m_window_scale;
     Widget* m_hovered_widget = nullptr;
     Widget* m_active_widget = nullptr;
     Math::ivec2 m_active_widget_pos;

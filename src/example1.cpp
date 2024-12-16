@@ -33,7 +33,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create window 
-    window = glfwCreateWindow(1920, 1080, "aeregui example 1", nullptr, nullptr);
+    window = glfwCreateWindow(800, 600, "aeregui example 1", nullptr, nullptr);
 
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     /*
@@ -48,8 +48,12 @@ int main()
     gladLoadGL(glfwGetProcAddress);
 
     glfwGetWindowSize(window, &SCR_WIDTH, &SCR_HEIGHT);
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    float xscale, yscale;
+    glfwGetWindowContentScale(window, &xscale, &yscale);
+
+    SCR_WIDTH *= xscale;
+    SCR_HEIGHT *= yscale;
 
     // Setup debug messages
     glEnable(GL_DEBUG_OUTPUT);
@@ -123,12 +127,12 @@ int main()
 
     Box * box1 = new Box();
     box1->assignTexture("box1");
-    window2row->addCol(box1, 300);
+    window2row->addCol(box1, 180);
 
     Box * box2 = new Box();
     box2->assignTexture("box2");
     box2->setFlags(0);
-    window2row->addCol(box2, 500);
+    window2row->addCol(box2, 520);
 
     Row * row2 = new Row(40);
     box2->addChild(row2);
@@ -146,9 +150,6 @@ int main()
 
     uictx.addWidget(window2);
 
-    float xscale, yscale;
-    glfwGetWindowContentScale(window, &xscale, &yscale);
-    printf("%f, %f\n", xscale, yscale);
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
