@@ -33,17 +33,13 @@ GLContext::GLContext(GLFWwindow* window)
     m_ta.font.bind = 0;
     m_ta.texture.bind = 1;
 
-    glCreateBuffers(1, &m_ssb.text.buf);
-    glNamedBufferStorage(m_ssb.text.buf, (1 << 16) / 16 * sizeof(Character), nullptr, GL_DYNAMIC_STORAGE_BIT);
-    m_ssb.text.bind = 0;
+    glCreateBuffers(1, &m_ssb.objects.buf);
+    glNamedBufferStorage(m_ssb.objects.buf, (1 << 16) / 16 * sizeof(Object), nullptr, GL_DYNAMIC_STORAGE_BIT);
+    m_ssb.objects.bind = 0;
 
-    glCreateBuffers(1, &m_ssb.quad.buf);
-    glNamedBufferStorage(m_ssb.quad.buf, (1 << 16) / 16 * sizeof(Quad), nullptr, GL_DYNAMIC_STORAGE_BIT);
-    m_ssb.quad.bind = 1;
-
-    glCreateBuffers(1, &m_ssb.colquad.buf);
-    glNamedBufferStorage(m_ssb.colquad.buf, (1 << 16) / 16 * sizeof(ColQuad), nullptr, GL_DYNAMIC_STORAGE_BIT);
-    m_ssb.colquad.bind = 2;
+    glCreateBuffers(1, &m_ub.objIndex.buf);
+    glNamedBufferStorage(m_ub.objIndex.buf, sizeof(int), nullptr, GL_DYNAMIC_STORAGE_BIT);
+    m_ub.objIndex.bind = 1;
 
     glfwGetWindowContentScale(window, &m_window_scale, nullptr);
     glfwGetWindowSize(window, &m_screen_size.x, &m_screen_size.y);
@@ -56,12 +52,6 @@ GLContext::GLContext(GLFWwindow* window)
     m_ub.screen_size.bind = 0;
 
     glNamedBufferSubData(m_ub.screen_size.buf, 0, sizeof(int) * 2, &m_screen_size);
-
-
-    float widgetPos[2] = { 0.f, 0.f };
-    glCreateBuffers(1, &m_ub.widget_pos.buf);
-    glNamedBufferStorage(m_ub.widget_pos.buf, sizeof(float) * 2, widgetPos, GL_DYNAMIC_STORAGE_BIT);
-    m_ub.widget_pos.bind = 1;
 
     createShader(&m_shaders.text,
                  VERSION_HEADER + BUFFERS + TEXTVERT,
@@ -88,32 +78,16 @@ GLContext::~GLContext()
 
 void GLContext::bindBuffers()
 {
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.text.bind, m_ssb.text.buf);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.quad.bind, m_ssb.quad.buf);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.colquad.bind, m_ssb.colquad.buf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_ssb.objects.bind, m_ssb.objects.buf);
     glBindBufferBase(GL_UNIFORM_BUFFER, m_ub.screen_size.bind, m_ub.screen_size.buf);
-    glBindBufferBase(GL_UNIFORM_BUFFER, m_ub.widget_pos.bind, m_ub.widget_pos.buf);
+    glBindBufferBase(GL_UNIFORM_BUFFER, m_ub.objIndex.bind, m_ub.objIndex.buf);
     glBindTextureUnit(m_ta.font.bind, m_ta.font.buf);
     glBindTextureUnit(m_ta.texture.bind, m_ta.texture.buf);
-}
-
-void GLContext::drawFromRenderData(const RenderData& data)
-{
-    /*
-    m_shaders.text.use();
-    glNamedBufferSubData(m_ssb.text.buf, 0, sizeof(Character) * data.text.size(), data.text.data()); 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, data.text.size());
-
-    m_shaders.quad.use()
-    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Character) * data.quad.size(), data.quad.data()); 
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, data.quad.size());
-    */
 }
 
 void GLContext::setWidgetPos(Math::fvec2 pos)
 {
     m_widget_pos = pos;
-    glNamedBufferSubData(m_ub.widget_pos.buf, 0, sizeof(float) * 2, &pos );
 }
 
 void GLContext::setScreenSize(int width, int height)
@@ -125,7 +99,7 @@ void GLContext::setScreenSize(int width, int height)
 }
 
 Character buf[128];
-int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags)
+int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, uint32_t flags)
 {
     size_t numchars = strlen(text);
 
@@ -148,10 +122,10 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     for (int idx = 0; idx < numchars; idx++)
     {
         const CharInfo& info = m_char_map[text[idx]];
-        buf[idx] = {
+        Character c = {
             .rect = fbox(
-                currx + info.bearing.x * scale,
-                pos.y - info.bearing.y * scale + m_font_height * scale,
+                currx + info.bearing.x * scale + m_widget_pos.x,
+                pos.y - info.bearing.y * scale + m_font_height * scale + m_widget_pos.y,
                 info.size.x * scale,
                 info.size.y * scale
             ),
@@ -160,17 +134,15 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
             .scale = scale,
         };
 
+        m_vObjects.push_back(c);
+        m_vCommands.push_back({Command::CHARACTER, flags, nullptr});
         currx += (info.advance) * scale;
     }
-
-    m_shaders.text.use();
-    glNamedBufferSubData(m_ssb.text.buf, 0, sizeof(Character) * numchars, buf);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, numchars);
 
     return currx;
 }
 
-void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, int flags)
+void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, uint32_t flags)
 {
     int layer = 0;
     //#TODO: don't hard code numebrs
@@ -184,36 +156,64 @@ void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, int flags)
             layer = 3;
     }
 
-    Quad buf = {
-        .rect = rect,
+    Quad q = {
+        .rect = fbox(rect.pos + m_widget_pos, rect.size),
         .texBounds = e->bounds,
         .layer = layer,
     };
 
-    glNamedBufferSubData(m_ssb.quad.buf, 0, sizeof(Quad), &buf);
-
-    if (flags & SLICE_9)
-    {
-        m_shaders.quad9slice.use();
-        glUniform4f(m_shaders.quad9slice.slices, e->top, e->right, e->bottom, e->left);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
-        return;
-    }
-
-    m_shaders.quad.use();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
+    m_vObjects.push_back(q);
+    m_vCommands.push_back({Command::QUAD, flags, e});
 }
 
 void GLContext::drawQuad(const Math::fbox& rect, const Math::fvec4& col)
 {
-    ColQuad buf = {
-        .rect = rect,
+    ColQuad q = {
+        .rect = fbox(rect.pos + m_widget_pos, rect.size),
         .col = col,
     };
 
-    glNamedBufferSubData(m_ssb.colquad.buf, 0, sizeof(ColQuad), &buf);
-    m_shaders.colquad.use();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
+    m_vObjects.push_back(q);
+    m_vCommands.push_back({Command::COLQUAD, 0, nullptr});
+}
+
+void GLContext::draw() {
+    bindBuffers();
+    glNamedBufferSubData(m_ssb.objects.buf, 0, sizeof(Object) * m_vObjects.size(), m_vObjects.data());
+
+    int count = 0;
+    for (auto& c : m_vCommands)
+    {
+        glNamedBufferSubData(m_ub.objIndex.buf, 0, sizeof(int), &count);
+        Object o;
+        if (c.type == Command::QUAD)
+        {
+            if (c.flags & SLICE_9)
+            {
+                m_shaders.quad9slice.use();
+                glUniform4f(m_shaders.quad9slice.slices,
+                            c.texentry->top, c.texentry->right, c.texentry->bottom, c.texentry->left);
+                glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 9);
+            }
+            else {
+                m_shaders.quad.use();
+                glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
+            }
+        }
+        else if (c.type == Command::COLQUAD)
+        {
+            m_shaders.colquad.use();
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
+        }
+        else if (c.type == Command::CHARACTER)
+        {
+            m_shaders.text.use();
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 1);
+        }
+        count++;
+    }
+    m_vObjects.clear();
+    m_vCommands.clear();
 }
 
 #include <ft2build.h>

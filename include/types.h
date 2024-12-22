@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include <stdint.h>
 
 NAMESPACE_BEGIN(AereGui);
 
@@ -281,6 +282,14 @@ struct box
           h(static_cast<T>(_box.h))
     {}
 
+    template <typename v>
+    box(const v& _pos, const v& _size)
+        : x(static_cast<T>(_pos.x)),
+          y(static_cast<T>(_pos.y)),
+          w(static_cast<T>(_size.x)),
+          h(static_cast<T>(_size.y))
+    {}
+
     //expand or shrink box
     static box expand(box _b, T _val)
     {
@@ -349,10 +358,55 @@ struct alignas(16) Quad
     int layer;
 };
 
-struct ColQuad
+struct alignas(16) ColQuad
 {
     Math::fbox rect; //xpos, ypos, width, height
     Math::fvec4 col;
+    int padding;
+};
+
+struct alignas(16) Object
+{
+    Object()
+    {
+    }
+
+    Object(const Object& o)
+    {
+        *this = o;
+    }
+
+    Object(Character c)
+    {
+        ch = c;
+    }
+    Object(Quad q)
+    {
+        quad = q;
+    }
+
+    Object(ColQuad q)
+    {
+        cq = q;
+    }
+    union {
+        Character ch;
+        Quad quad;
+        ColQuad cq;
+    };
+};
+
+struct TexEntry;
+struct Command
+{
+    enum {
+        QUAD,
+        CHARACTER,
+        COLQUAD
+    } type;
+
+    uint32_t flags;
+    TexEntry * texentry;
 };
 
 // font information

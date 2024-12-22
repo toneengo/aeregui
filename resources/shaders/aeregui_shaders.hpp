@@ -26,30 +26,23 @@ struct Quad {
 struct ColQuad {
     vec4 rect;
     vec4 col;
-};
-
-layout (std430, binding = 0) buffer textBuf {
-    Character text[];
-};
-
-layout (std430, binding = 1) buffer quadBuf {
-    Quad quads[];
-};
-
-layout (std430, binding = 2) buffer colQuadBuf {
-    ColQuad colquads[];
+    int padding;
 };
 
 layout (std140, binding = 0) uniform screenSzBuf {
     ivec2 screenSz;
 };
 
-layout (std140, binding = 1) uniform widgetPosBuf {
-    vec2 widgetPos;
+layout (std140, binding = 1) uniform indexBuf {
+    int index;
 };
 )#";
 
 inline const std::string TEXTVERT = R"#(
+layout (std430, binding = 0) buffer objectBuf {
+    Character text[];
+};
+
 out vec2 uv;
 flat out vec4 colour;
 flat out int layer;
@@ -66,12 +59,11 @@ void main() {
         ivec2(1, 0)
     ); 
 
-    vec4 rect = text[gl_InstanceID].rect;
-    rect.xy += widgetPos;
+    vec4 rect = text[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
-    float scale = text[gl_InstanceID].scale;
+    float scale = text[index].scale;
 
     uv = quad[gl_VertexID];
 
@@ -79,8 +71,8 @@ void main() {
     uv = vec2(0.0, rect.w / fontPx) +
          uv * (vec2(rect.z, -rect.w)) / fontPx;
 
-    layer = text[gl_InstanceID].layer;
-    colour = text[gl_InstanceID].col;
+    layer = text[index].layer;
+    colour = text[index].col;
 
     vec2 size = rect.zw / round(vec2(screenSz.x/2.0, screenSz.y/2.0)) * scale;
     vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
@@ -106,6 +98,9 @@ void main() {
 )#";
 
 inline const std::string COLQUADVERT = R"#(
+layout (std430, binding = 0) buffer objectBuf {
+    ColQuad colquads[];
+};
 out vec4 col;
 
 void main() {
@@ -118,12 +113,11 @@ void main() {
         ivec2(1, 0)
     ); 
 
-    vec4 rect = colquads[gl_InstanceID].rect;
-    rect.xy += widgetPos;
+    vec4 rect = colquads[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
-    col = colquads[gl_InstanceID].col;
+    col = colquads[index].col;
 
     vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
     vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
@@ -132,6 +126,10 @@ void main() {
 )#";
 
 inline const std::string QUADVERT = R"#(
+layout (std430, binding = 0) buffer objectBuf {
+    Quad quads[];
+};
+
 out vec2 uv;
 flat out int layer;
 
@@ -147,27 +145,30 @@ void main() {
 
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
-    vec4 rect = quads[gl_InstanceID].rect;
-    rect.xy += widgetPos;
+    vec4 rect = quads[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
-    vec4 texBounds = quads[gl_InstanceID].texBounds;
+    vec4 texBounds = quads[index].texBounds;
 
     uv = quad[gl_VertexID];
 
     uv = vec2(texBounds.x, texBounds.y) / ATLAS_SIZE +
          uv * (vec2(texBounds.z, -texBounds.w)) / ATLAS_SIZE;
 
-    layer = quads[gl_InstanceID].layer;
+    layer = quads[index].layer;
 
-    vec2 size = (rect.zw) / vec2(screenSz.x/2.0, screenSz.y/2.0);
+    vec2 size = rect.zw / vec2(screenSz.x/2.0, screenSz.y/2.0);
     vec2 pos = quad[gl_VertexID] * size + rect.xy / vec2(screenSz.x/2.0, screenSz.y/2.0);
     gl_Position = vec4(pos, 0.0, 1.0);
 }
 )#";
 
 inline const std::string QUAD9SLICEVERT = R"#(
+layout (std430, binding = 0) buffer objectBuf {
+    Quad quads[];
+};
+
 out vec2 uv;
 flat out int layer;
 
@@ -193,12 +194,11 @@ void main() {
 
     int ATLAS_SIZE = 512;
     int pixelSz = 2;
-    vec4 rect = quads[gl_InstanceID / 9].rect;
-    rect.xy += widgetPos;
+    vec4 rect = quads[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
 
-    vec4 texBounds = quads[gl_InstanceID / 9].texBounds;
+    vec4 texBounds = quads[index].texBounds;
 
     float top = slices.x;
     float right = slices.y;
@@ -250,7 +250,7 @@ void main() {
     uv = vec2(texBounds.x, texBounds.y) / ATLAS_SIZE +
          uv * (vec2(texBounds.z, -texBounds.w)) / ATLAS_SIZE;
 
-    layer = quads[gl_InstanceID / 9].layer;
+    layer = quads[index].layer;
 
     vec2 size = rect.zw / round(vec2(screenSz.x/2.0, screenSz.y/2.0));
     vec2 pos = quad[gl_VertexID] * size + rect.xy / round(vec2(screenSz.x/2.0, screenSz.y/2.0));

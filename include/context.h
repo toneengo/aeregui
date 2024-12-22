@@ -10,7 +10,7 @@
 
 NAMESPACE_BEGIN(AereGui);
 
-enum AereGui_flags : int
+enum AereGui_flags : uint32_t
 {
     CENTER_X = 0b00000001,
     CENTER_Y = 0b00000010,
@@ -33,7 +33,6 @@ friend class Screen;
 public:
     GLContext(GLFWwindow* window);
     ~GLContext();
-    void drawFromRenderData(const RenderData& data);
     void bindBuffers();
     void setWidgetPos(Math::fvec2 pos);
     Math::fvec2 getWidgetPos() { return m_widget_pos; };
@@ -44,9 +43,11 @@ public:
     void loadFont(const char* font);
     void preloadTextures(const char* dir);
 
-    int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, int flags);
-    void drawTexture(const Math::fbox& rect, TexEntry* e, int state, int flags);
+    int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, uint32_t flags);
+    void drawTexture(const Math::fbox& rect, TexEntry* e, int state, uint32_t flags);
     void drawQuad(const Math::fbox& rect, const Math::fvec4& col);
+
+    void draw();
     Math::fvec2 m_widget_pos;
 protected:
     // Buffer name/Buffer binding pair
@@ -61,6 +62,7 @@ protected:
     {
         nameIdx screen_size;
         nameIdx widget_pos;
+        nameIdx objIndex;
     } m_ub;
 
     // Shader storage buffers
@@ -69,6 +71,7 @@ protected:
         nameIdx text;
         nameIdx quad;
         nameIdx colquad;
+        nameIdx objects;
     } m_ssb;
 
     // Texture arrays
@@ -85,6 +88,9 @@ protected:
         Shader quad9slice;
         Shader text;
     } m_shaders;
+
+    std::vector<Command> m_vCommands;
+    std::vector<Object> m_vObjects;
 
     float fontPx;
     Math::ivec2 m_screen_size;
