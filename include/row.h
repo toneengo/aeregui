@@ -9,7 +9,7 @@ class Row : public Widget
 {
     friend class Widget;
 public:
-    Widget* addCol(Widget* widget, float size);
+    Widget* addCol(Widget* widget, float size = 0);
 
     template <typename... Cols>
     Row(Cols... columns)

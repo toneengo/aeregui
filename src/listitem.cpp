@@ -5,8 +5,8 @@ using namespace AereGui;
 using namespace Math;
 
 extern std::unordered_map<std::string, TexEntry> m_tex_map;
-ListItem::ListItem(const char* image, const char* label)
-    : Widget(), m_label(label)
+ListItem::ListItem(const char* image, const char* label, bool* binding)
+    : Widget(), m_label(label), m_binding(binding)
 {
     assignTexture(Defaults::ListItem::Texture);
     if (!m_tex_map.contains(image))
@@ -18,14 +18,18 @@ ListItem::ListItem(const char* image, const char* label)
     TexEntry* e = &m_tex_map[image];
     m_image_texentry = e;
 
-    m_box.w = e->bounds.w * 2;
-    m_box.h = e->bounds.h * 2;
+    setSize(fvec2(e->bounds.w * m_pixel_size, e->bounds.h * m_pixel_size));
+
+    *m_binding = false;
 }
 
 void ListItem::onMouseDownEvent(int button, int action)
 {
     Widget::onMouseDownEvent(button, action);
-    if (m_parent && m_state & STATE_ACTIVE) m_parent->setActiveChild(this);
+    if (m_state & STATE_ACTIVE)
+        *m_binding = true;
+    else
+        *m_binding = false;
 }
 
 void ListItem::draw(GLContext* ctx)

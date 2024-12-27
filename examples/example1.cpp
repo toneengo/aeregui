@@ -21,6 +21,12 @@ void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GL
 int SCR_WIDTH;
 int SCR_HEIGHT;
 
+bool selection[2];
+enum {
+    Lollipop = 0,
+    Tennis = 1,
+};
+
 Screen* screen;
 int main()
 {
@@ -34,14 +40,6 @@ int main()
 
     // Create window 
     window = glfwCreateWindow(800, 600, "aeregui example 1", nullptr, nullptr);
-
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    /*
-    glfwSetMouseButtonCallback(window, mouse_callback);
-    glfwSetKeyCallback(window, keyboard_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    */
 
     // Load OpenGL
     glfwMakeContextCurrent(window);
@@ -61,52 +59,6 @@ int main()
     glDebugMessageCallback(message_callback, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
-    // ************** ALL GUI STUF ********************
-    AereGui::Defaults::PixelSize = 2;
-
-    UIContext uictx(window);
-    uictx.loadFont("resources/fonts/unifont.ttf");
-    uictx.preloadTextures("resources/sprites");
-
-    //floating text input box
-    uictx.addWidget(new TextInput("Enter text here :-)", 500, 200, 200, 32));
-
-    //window 1
-    Widget* window1 = uictx.addWidget(new Window("window 1", 400, 600, 400, 200));
-    Widget* sendbutton = new Button("send!!", [](){printf("sent lololo\n");});
-    Widget* button = new Button("yes", [](){printf("sent lololo\n");});
-    Widget* input = new TextInput("Enter text:");
-
-    Widget* row1 = window1->addChild(new Row(50, 0, 0));
-    (*row1)[0] = sendbutton;
-    (*row1)[1] = input;
-    (*row1)[2] = button;
-
-    //window 2
-    Widget* window2 = new Window("window 2", 200, 100, 800, 400);
-
-    Widget* row2 = window2->addChild(new Row(180, 0));
-
-    (*row2)[0] = new Box();
-    (*row2)[0]->assignTexture("box1");
-
-    (*row2)[1] = new Box();
-    (*row2)[1]->assignTexture("box2");
-    (*row2)[1]->setFlags(0);
-
-    Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
-    listrow->setSize({0, 50});
-    for (int i = 0; i < 15; i++)
-    {
-        Widget* item1 = listrow->addCol(new ListItem("lollipop", "a lollipop"), 50);
-        item1->assignTexture("listitem");
-
-        Widget* item2 = listrow->addCol(new ListItem("tennis", "a tennis ball"), 30);
-        item2->assignTexture("listitem");
-    }
-
-    uictx.addWidget(window2);
-
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -116,8 +68,6 @@ int main()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    screen = uictx.screenPtr();
 
     //background
     int width, height, channels;
@@ -174,6 +124,15 @@ void main() {
 
     glDeleteShader(vsh); glDeleteShader(fsh);
 
+    // ************** ALL GUI STUFF ****************
+    AereGui::Defaults::PixelSize = 2;
+
+    UIContext uictx(window);
+    uictx.loadFont("resources/fonts/unifont.ttf");
+    uictx.preloadTextures("resources/sprites");
+
+    screen = uictx.screenPtr();
+
     glfwSetFramebufferSizeCallback(window,
         [](GLFWwindow* window, int width, int height)
         {
@@ -209,6 +168,42 @@ void main() {
         }
     );
 
+    //floating text input box
+    uictx.addWidget(new TextInput("Enter text here :-)", 500, 200, 200, 32));
+
+    //window 1
+    Widget* window1 = uictx.addWidget(new Window("window 1", 400, 600, 400, 200));
+    Widget* sendbutton = new Button("send!!", [](){printf("sent lololo\n");});
+    Widget* button = new Button("yes", [](){printf("sent lololo\n");});
+    Widget* input = new TextInput("Enter text:");
+
+    Widget* row1 = window1->addChild(new Row(50, 0, 0));
+    (*row1)[0] = sendbutton;
+    (*row1)[1] = input;
+    (*row1)[2] = button;
+
+    //window 2
+    Widget* window2 = new Window("window 2", 200, 100, 800, 400);
+
+    Widget* row2 = window2->addChild(new Row(180, 0));
+
+    (*row2)[0] = new Box();
+    (*row2)[0]->assignTexture("box1");
+
+    (*row2)[1] = new Box();
+    (*row2)[1]->assignTexture("box2");
+    (*row2)[1]->setFlags(0);
+
+    Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
+    listrow->setSize({0, 32});
+    for (int i = 0; i < 15; i++)
+    {
+        Widget* item1 = listrow->addCol(new ListItem("lollipop", "", &selection[0]));
+        Widget* item2 = listrow->addCol(new ListItem("tennis", "", &selection[1]));
+    }
+
+    uictx.addWidget(window2);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -219,7 +214,17 @@ void main() {
         glBindTextureUnit(0, bg);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
+        Widget* box1 = (*row2)[0];
+
+        Button but(selection[Lollipop] ? "lollipop time!!" : "tennis",
+                   selection[Lollipop] ? [](){ printf("lollipop :-)\n"); }
+                                       : [](){ printf("tenis :-(\n"); });
+
+        box1->addChild(&but);
+
         uictx.render();
+
+        box1->clear();
         glfwSwapBuffers(window);
     }
     glfwTerminate();

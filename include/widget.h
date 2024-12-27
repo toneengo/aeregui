@@ -36,6 +36,7 @@ public:
     bool    visible() { return m_visible; };
     void    assignTexture(std::string tex);
     void    setActiveChild(Widget* widget) { if (m_parent) m_parent->setActiveChild(widget); m_active_child = widget; };
+    void    clear() { m_children.clear(); }
 
     virtual void onFrameResizeEvent(int button, int action) {};
     virtual void onMouseDownEvent(int button, int action);

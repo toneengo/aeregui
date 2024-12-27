@@ -4,20 +4,9 @@ using namespace AereGui;
 
 Widget* Row::addCol(Widget* widget, float size)
 {
-    /*
-    widget->setSize({size, m_height});
-    if (m_wrap && m_parent && m_col_pos.x + size > m_parent->getSize().x)
-    {
-        m_col_pos.x = 0;
-        m_col_pos.y += m_height;
-        m_box.height += m_height;
-    }
-    
-    widget->setPos({m_col_pos.x, m_col_pos.y});
-    m_col_pos.x += size;
+    if (size == 0 && widget && widget->m_inherit.width == 0)
+        size = widget->m_box.width;
 
-    m_box.width = std::max(m_col_pos.x, m_box.width);
-    */
     m_children.push_back(widget);
     m_widths.push_back(size);
     if (size < 1) 

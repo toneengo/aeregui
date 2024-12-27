@@ -10,7 +10,7 @@ class ListItem : public Widget
 {
     friend class Widget;
 public:
-    ListItem(const char* image, const char* label);
+    ListItem(const char* image, const char* label, bool* binding);
     virtual void draw(GLContext* ctx) override;
     virtual void onMouseDownEvent(int button, int action) override;
 protected:
@@ -19,6 +19,8 @@ protected:
     int m_data;
     Math::fvec2 m_col_pos;
     bool m_wrap;
+
+    bool* m_binding;
 };
 
 NAMESPACE_END(AereGui);
