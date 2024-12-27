@@ -74,16 +74,19 @@ int main()
     //window 1
     Widget* window1 = uictx.addWidget(new Window("window 1", 400, 600, 400, 200));
     Widget* sendbutton = new Button("send!!", [](){printf("sent lololo\n");});
+    Widget* button = new Button("yes", [](){printf("sent lololo\n");});
     Widget* input = new TextInput("Enter text:");
 
-    Widget* row1 = window1->addChild(new Row(100, 0));
+    Widget* row1 = window1->addChild(new Row(50, 0, 0));
     (*row1)[0] = sendbutton;
     (*row1)[1] = input;
+    (*row1)[2] = button;
 
     //window 2
     Widget* window2 = new Window("window 2", 200, 100, 800, 400);
 
     Widget* row2 = window2->addChild(new Row(180, 0));
+
     (*row2)[0] = new Box();
     (*row2)[0]->assignTexture("box1");
 
@@ -92,15 +95,14 @@ int main()
     (*row2)[1]->setFlags(0);
 
     Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
+    listrow->setSize({0, 50});
     for (int i = 0; i < 15; i++)
     {
-        ListItem* item1 = new ListItem("lollipop", "A weird lollipop");
+        Widget* item1 = listrow->addCol(new ListItem("lollipop", "a lollipop"), 50);
         item1->assignTexture("listitem");
-        listrow->addCol(item1, 72);
 
-        ListItem* item2 = new ListItem("tennis", "A tennis ball");
+        Widget* item2 = listrow->addCol(new ListItem("tennis", "a tennis ball"), 30);
         item2->assignTexture("listitem");
-        listrow->addCol(item2, 40);
     }
 
     uictx.addWidget(window2);

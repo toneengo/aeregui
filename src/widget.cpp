@@ -80,11 +80,12 @@ void Widget::draw(GLContext* ctx)
     //if (m_inherit.x  > 0) m_box.x = m_bounds.x + m_bounds.width  * m_inherit.x;
     //if (m_inherit.y  > 0) m_box.y = m_bounds.y + m_bounds.height * m_inherit.y;
 
-    //#TODO: lots of redundant calls here
     if (m_parent && m_parent->m_needs_update)
     {
-        if (m_parent)
+        if (m_parent) {
             m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
+            m_bounds.pos = fvec2(m_parent->m_padding.left, m_parent->m_padding.top);
+        }
 
         if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
         if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
@@ -92,14 +93,14 @@ void Widget::draw(GLContext* ctx)
         m_needs_update = true;
     }
 
-    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + fvec2(m_padding.left, m_padding.top));
+    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + m_bounds.pos);
     for (auto& w : m_children)
     {
         if (w == nullptr) continue;
         if (w->m_visible)
             w->draw(ctx);
     }
-    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos - fvec2(m_padding.left, m_padding.top));
+    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos - m_bounds.pos);
     m_needs_update = false;
 }
 
@@ -139,8 +140,11 @@ Widget* Widget::findWidget(ivec2& pos)
     for (auto it = m_children.rbegin(); it != m_children.rend(); ++it)
     {
         Widget* child = *it;
-        if (child->visible() && child->contains(pos))
+        if (child->visible() && child->contains(pos - fvec2(m_padding.left, m_padding.top)))
+        {
+            pos -= ivec2(m_padding.left, m_padding.top);
             return child->findWidget(pos);
+        }
     }
     return /*contains(pos) &&*/ m_visible ? this : nullptr;
 }

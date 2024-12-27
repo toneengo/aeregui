@@ -111,6 +111,13 @@ struct vec2
         return val;
     }
 
+    template <typename v>
+    void operator+=(const v& vec)
+    {
+        x += vec.x;
+        y += vec.y;
+    }
+
     //multiplication
     template <typename v>
     vec2<T> operator*(const v& num) const

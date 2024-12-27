@@ -2,7 +2,7 @@
 
 using namespace AereGui;
 
-void Row::addCol(Widget* widget, float size)
+Widget* Row::addCol(Widget* widget, float size)
 {
     /*
     widget->setSize({size, m_height});
@@ -32,10 +32,12 @@ void Row::addCol(Widget* widget, float size)
     }
 
     m_needs_update = true;
+    return widget;
 }
 
 void Row::draw(GLContext* ctx)
 {
+    Widget::draw(ctx);
     if (m_parent && m_parent->m_needs_update)
     {
         float currWidth = 0;
@@ -51,5 +53,4 @@ void Row::draw(GLContext* ctx)
 
         m_needs_update = false;
     }
-    Widget::draw(ctx);
 }
