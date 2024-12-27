@@ -1,9 +1,42 @@
 #pragma once
 
 #include "common.h"
+#include <vector>
 #include <stdint.h>
 
 NAMESPACE_BEGIN(AereGui);
+
+enum {
+    INHERIT = 0
+};
+
+enum AereGui_flags : uint32_t
+{
+    CENTER_X = 0b00000001,
+    CENTER_Y = 0b00000010,
+    SLICE_9  = 0b00000100,
+    SLICE_3  = 0b00001000,
+    BLUR     = 0b00010000,
+};
+
+enum Align : uint32_t
+{
+    ALIGN_NONE,
+    ALIGN_LEFT,
+    ALIGN_CENTER,
+    ALIGN_RIGHT,
+
+    ALIGN_TOP,
+    ALIGN_BOTTOM,
+};
+
+enum AereGui_state : uint8_t 
+{
+    STATE_NONE   = 0b00000001,
+    STATE_ACTIVE = 0b00000010,
+    STATE_HOVER  = 0b00000100,
+    STATE_PRESS  = 0b00001000,
+};
 
 NAMESPACE_BEGIN(Math);
 
@@ -219,9 +252,12 @@ struct vec4
     //#TODO: other initialisers. likely dont need them though. need to finish vec3 first
 };
 
+typedef vec4<bool> bvec4;
+
 typedef vec4<float> fvec4;
 typedef vec3<float> fvec3;
 typedef vec2<float> fvec2;
+
 typedef vec4<int> ivec4;
 typedef vec3<int> ivec3;
 typedef vec2<int> ivec2;
@@ -250,7 +286,12 @@ struct box
         union { vec2<T> size, wh; };
     };
 
-    box() {}
+    box()
+        : x(0),
+          y(0),
+          w(0),
+          h(0)
+    {}
 
     box(const box<T>& _box)
         : x(_box.x),
@@ -264,6 +305,20 @@ struct box
           y(static_cast<T>(_y)),
           w(static_cast<T>(_w)),
           h(static_cast<T>(_h))
+    {}
+
+    box(const int _val)
+        : x(static_cast<T>(_val)),
+          y(static_cast<T>(_val)),
+          w(static_cast<T>(_val)),
+          h(static_cast<T>(_val))
+    {}
+
+    box(const float _val)
+        : x(static_cast<T>(_val)),
+          y(static_cast<T>(_val)),
+          w(static_cast<T>(_val)),
+          h(static_cast<T>(_val))
     {}
 
     template <typename v>
@@ -338,7 +393,8 @@ struct box
 };
 
 typedef box<float> fbox;
-typedef box<int> ibox;
+typedef box<int>   ibox;
+typedef box<bool>  bbox;
 
 NAMESPACE_END(Math);
 
@@ -356,6 +412,7 @@ struct alignas(16) Quad
     Math::fbox rect; //xpos, ypos, width, height
     Math::ibox texBounds; //xpos, ypos, width, height
     int layer;
+    int pixelSize;
 };
 
 struct alignas(16) ColQuad

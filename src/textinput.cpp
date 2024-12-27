@@ -1,3 +1,4 @@
+#include "defaults.h"
 #include "textinput.h"
 #include "util.h"
 #include "math.h"
@@ -13,12 +14,12 @@ namespace stc = std::chrono;
 stc::nanoseconds flashTime = stc::milliseconds(1000) / 2;
 auto currentTime = stc::steady_clock::now();
 
-TextInput::TextInput(const char* placeholder)
-    : Widget(), m_placeholder(placeholder), m_width(0), m_offsetx(0),
+TextInput::TextInput(const char* placeholder, int x, int y, int width, int height)
+    : Widget(x, y, width, height), m_placeholder(placeholder), m_width(0), m_offsetx(0),
       m_pos_buf(1, 0), m_text_cur(0), showTextCursor(true), accumulator(0),
       m_sel(-1, -1)
 {
-    m_text_scale = 0.4;
+    assignTexture(Defaults::TextInput::Texture);
 }
 
 void TextInput::onCursorPosEvent(int x, int y)
@@ -74,7 +75,7 @@ void TextInput::onKeyEvent(int key, int scancode, int action, int mods)
             m_text_buf.erase(m_text_buf.begin() + m_text_cur);
             m_pos_buf.erase(m_pos_buf.begin() + m_text_cur + 1);
 
-            if (m_width > m_inner_box.width)
+            if (m_width > m_box.width)
                 m_offsetx += fmin(delWidth, -m_offsetx);
 
             m_width -= delWidth;
@@ -117,7 +118,7 @@ void TextInput::onCharEvent(unsigned int codepoint)
         *it += advance * m_text_scale;
     }
 
-    if (m_width > m_inner_box.width)
+    if (m_width > m_box.width)
         m_offsetx -= advance * m_text_scale;
 }
 
@@ -137,27 +138,27 @@ void TextInput::draw(GLContext* ctx)
 
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, m_pixel_size, SLICE_9);
 
     /*
     ibox ogSx;
     glGetIntegerv(GL_SCISSOR_BOX, (GLint*)&ogSx);
 
     fvec2 parentPos = ctx->getWidgetPos();
-    glScissor(parentPos.x + m_inner_box.x,
-        ogSx.y + ogSx.height - parentPos.y - m_inner_box.y - m_inner_box.height,
-        m_inner_box.width, m_inner_box.height);
-        */
+    glScissor(parentPos.x + m_box.x,
+        ogSx.y + ogSx.height - parentPos.y - m_box.y - m_box.height,
+        m_box.width, m_box.height);
+    */
 
     if (m_sel.x != m_sel.y)
         //#TODO: dont use static colour
         ctx->drawQuad(
             fbox(
                 fmin(m_pos_buf[m_sel.x], m_pos_buf[m_sel.y]) +
-                    m_inner_box.x + m_offsetx,
-                m_inner_box.y,
+                    m_box.x + m_offsetx,
+                m_box.y,
                 abs(m_pos_buf[m_sel.x] - m_pos_buf[m_sel.y]),
-                abs(m_inner_box.height)
+                abs(m_box.height)
             ),
             {115/255.0, 164/255.0, 194/255.0, 1.0}
         );
@@ -166,7 +167,7 @@ void TextInput::draw(GLContext* ctx)
     ctx->drawText(
         !getFlagBit(m_state, STATE_ACTIVE) && m_text_buf.size() == 0
         ? m_placeholder.c_str() : m_text_buf.c_str(),
-        {m_inner_box.x + m_offsetx, m_inner_box.y + m_inner_box.height / 2},
+        {m_box.x + m_offsetx, m_box.y + m_box.height / 2},
         m_text_color,
         m_text_scale,
         CENTER_Y
@@ -175,7 +176,7 @@ void TextInput::draw(GLContext* ctx)
     if (showTextCursor && getFlagBit(m_state, STATE_ACTIVE))
     {
         ctx->drawText("|",
-            {m_inner_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_inner_box.y + m_inner_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
+            {m_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_box.y + m_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
     }
 
     /*

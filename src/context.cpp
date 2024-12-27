@@ -142,7 +142,7 @@ int GLContext::drawText(const char* text, Math::fvec2 pos, const Math::fvec4& co
     return currx;
 }
 
-void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, uint32_t flags)
+void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, int pixel_size, uint32_t flags)
 {
     int layer = 0;
     //#TODO: don't hard code numebrs
@@ -160,6 +160,7 @@ void GLContext::drawTexture(const fbox& rect, TexEntry* e, int state, uint32_t f
         .rect = fbox(rect.pos + m_widget_pos, rect.size),
         .texBounds = e->bounds,
         .layer = layer,
+        .pixelSize = pixel_size
     };
 
     m_vObjects.push_back(q);

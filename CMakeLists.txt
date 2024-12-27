@@ -17,7 +17,6 @@ project("aeregui")
 add_library(aeregui)
 add_executable(example1)
 
-
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(Freetype REQUIRED)
@@ -25,6 +24,8 @@ find_package(glm CONFIG REQUIRED)
 
 add_subdirectory(src)
 add_subdirectory(include/src)
+
+add_subdirectory(examples)
 
 foreach(TARGET aeregui example1)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT}")

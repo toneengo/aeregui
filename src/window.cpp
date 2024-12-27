@@ -1,13 +1,16 @@
+#include "defaults.h"
 #include "window.h"
 #include "util.h"
 
 using namespace AereGui;
 using namespace Math;
 
-Window::Window(const char* title)
-    : Widget(), m_title(title), m_moving(false), m_resizing(false)
+Window::Window(const char* title, int xpos, int ypos, int width, int height)
+    : Widget(xpos, ypos, width, height), m_title(title), m_moving(false), m_resizing(false)
 {
-    m_text_scale = 0.4;
+    assignTexture(Defaults::Window::Texture);
+    m_padding = Defaults::Window::Padding;
+    m_padding.top = m_texentry->top * m_pixel_size;
 }
 
 void Window::onCursorPosEvent(int x, int y)
@@ -29,10 +32,9 @@ void Window::onMouseDownEvent(int button, int action)
 {
     Widget::onMouseDownEvent(button, action);
 
-    //TODO: REMOVE * 2!!!!!
     if (!getFlagBit(m_state, STATE_ACTIVE)) return;
     if (action == GLFW_PRESS &&
-        fbox(0, 0, m_box.width, m_texentry->top * 2).contains(m_cursor_pos))
+        fbox(0, 0, m_box.width, m_texentry->top * m_pixel_size).contains(m_cursor_pos))
     {
         m_cursor_offset = m_cursor_pos - m_box.pos;
         m_moving = true;
@@ -40,9 +42,9 @@ void Window::onMouseDownEvent(int button, int action)
     }
     
     if (action == GLFW_PRESS &&
-        fbox(m_box.width  - m_texentry->right * 2,
-             m_box.height - m_texentry->bottom * 2,
-             m_texentry->right * 2, m_texentry->bottom * 2).contains(m_cursor_pos))
+        fbox(m_box.width  - m_texentry->right * m_pixel_size,
+             m_box.height - m_texentry->bottom * m_pixel_size,
+             m_texentry->right * m_pixel_size, m_texentry->bottom * m_pixel_size).contains(m_cursor_pos))
     {
         m_cursor_offset = fvec2(m_box.width, m_box.height) - m_cursor_pos;
         m_resizing = true;
@@ -55,10 +57,9 @@ void Window::onMouseDownEvent(int button, int action)
 
 void Window::draw(GLContext* ctx)
 {
-    m_inner_box = fbox::expand(m_box, -8);
-    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, m_pixel_size, SLICE_9);
 
-    ctx->drawText(m_title.c_str(), {m_inner_box.x, m_box.y + m_texentry->top * 2/ 2}, m_text_color, m_text_scale, CENTER_Y);
+    ctx->drawText(m_title.c_str(), {m_box.x + m_padding.left, m_box.y + m_texentry->top * m_pixel_size / 2}, m_text_color, m_text_scale, CENTER_Y);
 
     Widget::draw(ctx);
 }

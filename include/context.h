@@ -10,23 +10,6 @@
 
 NAMESPACE_BEGIN(AereGui);
 
-enum AereGui_flags : uint32_t
-{
-    CENTER_X = 0b00000001,
-    CENTER_Y = 0b00000010,
-    SLICE_9  = 0b00000100,
-    SLICE_3  = 0b00001000,
-    BLUR     = 0b00010000,
-};
-
-enum AereGui_state : uint8_t 
-{
-    STATE_NONE   = 0b00000001,
-    STATE_ACTIVE = 0b00000010,
-    STATE_HOVER  = 0b00000100,
-    STATE_PRESS  = 0b00001000,
-};
-
 class GLContext
 {
 friend class Screen;
@@ -44,7 +27,7 @@ public:
     void preloadTextures(const char* dir);
 
     int drawText(const char* text, Math::fvec2 pos, const Math::fvec4& col, float scale, uint32_t flags);
-    void drawTexture(const Math::fbox& rect, TexEntry* e, int state, uint32_t flags);
+    void drawTexture(const Math::fbox& rect, TexEntry* e, int state, int pixel_size, uint32_t flags);
     void drawQuad(const Math::fbox& rect, const Math::fvec4& col);
 
     void draw();

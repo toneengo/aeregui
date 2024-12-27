@@ -1,12 +1,16 @@
+#include "defaults.h"
 #include "button.h"
 #include "util.h"
 
 using namespace AereGui;
+using namespace Math;
 
-Button::Button(const char* label, _AEREGUI_FN_PTR fn)
-    : Widget(), m_label(label), m_pressed_offset(0, 2), m_function(fn)
+Button::Button(const char* label, _AEREGUI_FN_PTR fn, int xpos, int ypos, int width, int height)
+    : Widget(xpos, ypos, width, height),
+      m_label(label), m_pressed_offset(Defaults::Button::POffset), m_function(fn)
 {
-    m_text_scale = 0.4;
+    assignTexture(Defaults::Button::Texture);
+    m_padding = Defaults::Button::Padding;
 }
 
 /*
@@ -33,7 +37,7 @@ void Button::draw(GLContext* ctx)
 {
     Widget::draw(ctx);
 
-    ctx->drawTexture(m_box, m_texentry, m_state, SLICE_9);
+    ctx->drawTexture(m_box, m_texentry, m_state, m_pixel_size, SLICE_9);
 
     ctx->drawText(m_label.c_str(),
         m_state & STATE_PRESS ? m_box.pos + m_box.size / 2 + m_pressed_offset

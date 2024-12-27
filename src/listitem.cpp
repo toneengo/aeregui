@@ -1,3 +1,4 @@
+#include "defaults.h"
 #include "listitem.h"
 
 using namespace AereGui;
@@ -7,6 +8,7 @@ extern std::unordered_map<std::string, TexEntry> m_tex_map;
 ListItem::ListItem(const char* image, const char* label)
     : Widget(), m_label(label)
 {
+    assignTexture(Defaults::ListItem::Texture);
     if (!m_tex_map.contains(image))
     {
         printf("invalid assign texture in list item");
@@ -29,6 +31,6 @@ void ListItem::onMouseDownEvent(int button, int action)
 void ListItem::draw(GLContext* ctx)
 {
     int state = m_state & STATE_ACTIVE ? STATE_ACTIVE : m_state;
-    ctx->drawTexture(m_box, m_image_texentry, state, 0);
-    ctx->drawTexture(m_box, m_texentry, state, SLICE_9);
+    ctx->drawTexture(m_box, m_image_texentry, state, m_pixel_size, 0);
+    ctx->drawTexture(m_box, m_texentry, state, m_pixel_size, SLICE_9);
 }

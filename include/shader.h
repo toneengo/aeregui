@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include <string>
 
 NAMESPACE_BEGIN(AereGui);
 struct uniformInfo

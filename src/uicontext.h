@@ -19,7 +19,7 @@ public:
     // Clears render data.
     void clear();
 
-    void addWidget(Widget* widget);
+    Widget* addWidget(Widget* widget);
 
     void loadFont(const char* font);
     Screen* screenPtr() { return m_screen; };

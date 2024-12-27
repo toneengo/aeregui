@@ -1,13 +1,27 @@
+#include "defaults.h"
 #include "widget.h"
 #include "util.h"
 
 using namespace AereGui;
 using namespace Math;
-Widget::Widget()
-    : m_visible(true), m_box(0, 0, 1, 1), m_text_color(1, 1, 1, 1),
-      m_text_scale(1.0), m_render_flags(SLICE_9),
+Widget::Widget(float xpos, float ypos, float width, float height)
+    : m_visible(true),
+      m_box(xpos, ypos, width, height),
+      m_text_color(Defaults::Font::Color),
+      m_text_scale(Defaults::Font::Scale), m_render_flags(Defaults::Flags),
+      m_pixel_size(Defaults::PixelSize),
       m_state(STATE_NONE)
 {
+    //#TODO: do xpos and ypos percetanges too
+    if (width < 1)
+    {
+        m_inherit.width = width == 0 ? 1 : width;
+    }
+
+    if (height < 1)
+    {
+        m_inherit.height = height == 0 ? 1 : height;
+    }
 }
 
 void Widget::onCursorPosEvent(int x, int y)
@@ -62,14 +76,31 @@ void Widget::onMouseDownEvent(int button, int action)
 void Widget::draw(GLContext* ctx)
 {
     if (!m_visible) return;
-    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos);
-    //ctx->drawFromRenderData(m_render_data);
+
+    //if (m_inherit.x  > 0) m_box.x = m_bounds.x + m_bounds.width  * m_inherit.x;
+    //if (m_inherit.y  > 0) m_box.y = m_bounds.y + m_bounds.height * m_inherit.y;
+
+    //#TODO: lots of redundant calls here
+    if (m_parent && m_parent->m_needs_update)
+    {
+        if (m_parent)
+            m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
+
+        if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
+        if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
+
+        m_needs_update = true;
+    }
+
+    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + fvec2(m_padding.left, m_padding.top));
     for (auto& w : m_children)
     {
-        if (!m_visible) continue;
-        w->draw(ctx);
+        if (w == nullptr) continue;
+        if (w->m_visible)
+            w->draw(ctx);
     }
-    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos);
+    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos - fvec2(m_padding.left, m_padding.top));
+    m_needs_update = false;
 }
 
 bool Widget::contains(const Math::fvec2& pos)
@@ -84,22 +115,21 @@ void Widget::assignTexture(std::string tex)
 {
     if (!m_tex_map.contains(tex))
     {
-        printf("invalid assign texture");
+        printf("%s not found/loaded", tex.c_str());
         exit(1);
     }
 
     m_texture_name = tex;
     TexEntry* e = &m_tex_map[tex];
     m_texentry = e;
-
-    m_box.w = e->bounds.w * 2;
-    m_box.h = e->bounds.h * 2;
 }
 
-void Widget::addChild(Widget* widget)
+Widget* Widget::addChild(Widget* widget)
 {
     m_children.push_back(widget);
     widget->m_parent = this;
+    widget->m_bounds = fbox::pad(m_box, m_padding);
+    return widget;
 }
 
 //changes pos

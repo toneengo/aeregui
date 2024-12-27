@@ -21,6 +21,7 @@ struct Quad {
     vec4 rect;
     ivec4 texBounds;
     int layer;
+    int pixelSize;
 };
 
 struct ColQuad {
@@ -144,7 +145,6 @@ void main() {
     ); 
 
     int ATLAS_SIZE = 512;
-    int pixelSz = 2;
     vec4 rect = quads[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
@@ -193,7 +193,7 @@ void main() {
     ); 
 
     int ATLAS_SIZE = 512;
-    int pixelSz = 2;
+    int px = quads[index].pixelSize;
     vec4 rect = quads[index].rect;
     rect.x -= screenSz.x / 2;
     rect.y = screenSz.y / 2 - rect.y - rect.w;
@@ -207,40 +207,40 @@ void main() {
 
     if (gl_InstanceID % 3 == 0)
     {
-        rect.z = left * 2;
+        rect.z = left * px;
         texBounds.z = left;
     }
     else if (gl_InstanceID % 3 == 1)
     {
-        rect.x += left * 2;
-        rect.z -= (left + right) * 2;
+        rect.x += left * px;
+        rect.z -= (left + right) * px;
         texBounds.x += left;
         texBounds.z -= left + right;
     }
     else if (gl_InstanceID % 3 == 2)
     {
-        rect.x += rect.z - right * 2;
-        rect.z = right * 2;
+        rect.x += rect.z - right * px;
+        rect.z = right * px;
         texBounds.x += texBounds.z - right; 
         texBounds.z = right;
     }
 
     if (gl_InstanceID % 9 / 3 == 0)
     {
-        rect.w = bottom * 2;
+        rect.w = bottom * px;
         texBounds.w = bottom;
     }
     else if (gl_InstanceID % 9 / 3 == 1)
     {
-        rect.y += bottom * 2;
-        rect.w -= (top + bottom) * 2;
+        rect.y += bottom * px;
+        rect.w -= (top + bottom) * px;
         texBounds.y -= bottom;
         texBounds.w -= top + bottom;
     }
     else if (gl_InstanceID % 9 / 3 == 2)
     {
-        rect.y += rect.w - top * 2;
-        rect.w = top * 2;
+        rect.y += rect.w - top * px;
+        rect.w = top * px;
         texBounds.y -= texBounds.w - top;
         texBounds.w = top;
     }

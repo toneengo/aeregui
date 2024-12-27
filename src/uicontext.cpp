@@ -20,9 +20,10 @@ UIContext::UIContext(GLFWwindow* window)
     m_screen->setPos(fvec2(0));
 }
 
-void UIContext::addWidget(Widget* widget)
+Widget* UIContext::addWidget(Widget* widget)
 {
     m_screen->addChild(widget);
+    return widget;
 }
 
 void UIContext::loadFont(const char* font)

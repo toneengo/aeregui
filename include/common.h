@@ -1,6 +1,3 @@
-#include <string>
-#include <vector>
-
 #if !defined(NAMESPACE_BEGIN) || defined(DOXYGEN_DOCUMENTATION_BUILD)
     #define NAMESPACE_BEGIN(name) namespace name {
 #endif

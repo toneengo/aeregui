@@ -9,7 +9,7 @@ class Window : public Widget
 {
     friend class Widget;
 public:
-    Window(const char* title);
+    Window(const char* title, int x = 0, int y = 0, int width = INHERIT, int height = INHERIT);
     virtual void draw(GLContext* ctx);
     void onCursorPosEvent(int x, int y);
     void onMouseDownEvent(int button, int action);

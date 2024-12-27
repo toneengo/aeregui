@@ -9,7 +9,7 @@ class Box : public Widget
 {
     friend class Widget;
 public:
-    Box();
+    Box(int x = 0, int y = 0, int width = INHERIT, int height = INHERIT);
     virtual void draw(GLContext* ctx);
 protected:
 };

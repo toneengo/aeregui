@@ -61,92 +61,47 @@ int main()
     glDebugMessageCallback(message_callback, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
+    // ************** ALL GUI STUF ********************
+    AereGui::Defaults::PixelSize = 2;
+
     UIContext uictx(window);
     uictx.loadFont("resources/fonts/unifont.ttf");
     uictx.preloadTextures("resources/sprites");
 
-    Widget * button = new Button("play now!!!!", []()
-        {
-            printf("button pressed!!\n");
-        }
-    );
-    button->assignTexture("button");
-    /*
-    button->setPos({200, 200});
-    button->setSize({200, 50});
-    uictx.addWidget(button);
-    */
+    //floating text input box
+    uictx.addWidget(new TextInput("Enter text here :-)", 500, 200, 200, 32));
 
-    Widget * input = new TextInput("Enter text here :-)");
-    input->assignTexture("textinput");
-    input->setPos({500, 200});
-    input->setSize({200, 32});
-    input->setPadding(4);
-    uictx.addWidget(input);
+    //window 1
+    Widget* window1 = uictx.addWidget(new Window("window 1", 400, 600, 400, 200));
+    Widget* sendbutton = new Button("send!!", [](){printf("sent lololo\n");});
+    Widget* input = new TextInput("Enter text:");
 
-    Widget * window1 = new Window("My amazing gui window!!!!");
-    window1->assignTexture("window");
-    window1->setSize({400, 200});
-    window1->setPos({400, 600});
-    window1->setPadding(8);
-    uictx.addWidget(window1);
+    Widget* row1 = window1->addChild(new Row(100, 0));
+    (*row1)[0] = sendbutton;
+    (*row1)[1] = input;
 
-    Widget * cinput = new TextInput("Enter text:");
-    cinput->assignTexture("textinput");
-    cinput->setPadding(4);
-    /*
-    cinput->setPos({10, 40});
-    cinput->setSize({250, 32});
-    window1->addChild(cinput);
-    */
+    //window 2
+    Widget* window2 = new Window("window 2", 200, 100, 800, 400);
 
-    Widget * cb = new Button("send!! (not real)", [](){printf("sent lololo\n");});
-    cb->assignTexture("button");
-    /*
-    cb->setPos({10, 80});
-    cb->setSize({200, 32});
-    window1->addChild(cb);
-    */
+    Widget* row2 = window2->addChild(new Row(180, 0));
+    (*row2)[0] = new Box();
+    (*row2)[0]->assignTexture("box1");
 
-    Row * row1 = new Row(50);
-    window1->addChild(row1);
-    row1->addCol(cb, 100);
-    row1->addCol(cinput, 200);
-    row1->addCol(button, 150);
-    row1->setPos({10, 50});
+    (*row2)[1] = new Box();
+    (*row2)[1]->assignTexture("box2");
+    (*row2)[1]->setFlags(0);
 
-    Widget * window2 = new Window("Some boxes");
-    window2->assignTexture("window");
-    window2->setSize({800, 400});
-    window2->setPos({200, 100});
-    window2->setPadding(8);
-
-    Row * window2row = new Row(352);
-    window2->addChild(window2row);
-    window2row->setPos({0, 32});
-
-    Box * box1 = new Box();
-    box1->assignTexture("box1");
-    window2row->addCol(box1, 180);
-
-    Box * box2 = new Box();
-    box2->assignTexture("box2");
-    box2->setFlags(0);
-    window2row->addCol(box2, 520);
-
-    Row * row2 = new Row(40);
-    box2->addChild(row2);
+    Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
     for (int i = 0; i < 15; i++)
     {
         ListItem* item1 = new ListItem("lollipop", "A weird lollipop");
         item1->assignTexture("listitem");
-        row2->addCol(item1, 72);
+        listrow->addCol(item1, 72);
 
         ListItem* item2 = new ListItem("tennis", "A tennis ball");
         item2->assignTexture("listitem");
-        row2->addCol(item2, 40);
+        listrow->addCol(item2, 40);
     }
-    //row2->setPos({10, 50}); // why does this fk it up?
 
     uictx.addWidget(window2);
 
