@@ -1,3 +1,4 @@
+#include "defaults.h"
 #include "box.h"
 
 using namespace AereGui;
@@ -5,7 +6,9 @@ using namespace Math;
 
 Box::Box(int x, int y, int width, int height)
     : Widget(x, y, width, height)
-{}
+{
+    m_padding = Defaults::Box::Padding;
+}
 
 void Box::draw(GLContext* ctx)
 {

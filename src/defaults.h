@@ -39,7 +39,7 @@ namespace ListItem {
 }
 
 namespace Box {
-    inline Math::ibox  Padding;
+    inline Math::fvec4 Padding(12);
 }
 
 namespace Row {

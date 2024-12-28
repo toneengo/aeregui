@@ -30,12 +30,18 @@ void Row::draw(GLContext* ctx)
     if (m_parent && m_parent->m_needs_update)
     {
         float currWidth = 0;
+        m_wrapped_height = 0;
         for (int i = 0; i < m_children.size(); i++)
         {
             if (m_inherit_widths[i] > 0)
                 m_widths[i] = (m_box.width - m_absolute_width) * m_inherit_widths[i] / m_inherit_cols;
 
-            m_children[i]->setPos({m_box.x + currWidth, m_box.y});
+            if (m_render_flags & WRAPPED && currWidth + m_widths[i] > m_box.width)
+            {
+                currWidth = 0;
+                m_wrapped_height += m_box.height;
+            }
+            m_children[i]->setPos({m_box.x + currWidth, m_box.y + m_wrapped_height});
             m_children[i]->setSize({float(m_widths[i]), m_box.height});
             currWidth += m_widths[i];
         }

@@ -13,7 +13,7 @@ public:
 
     template <typename... Cols>
     Row(Cols... columns)
-        : Widget(), m_wrap(1)
+        : Widget()
     {
         (addCol(nullptr, columns), ...);
     }
@@ -23,7 +23,7 @@ protected:
     std::vector<double> m_widths;
     std::vector<double> m_inherit_widths;
     float m_height;
-    int m_wrapped_height;
+    int m_wrapped_height = 0;
     
     Math::fvec2 m_col_pos;
     bool m_wrap;

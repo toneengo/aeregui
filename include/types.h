@@ -12,11 +12,12 @@ enum {
 
 enum AereGui_flags : uint32_t
 {
-    CENTER_X = 0b00000001,
-    CENTER_Y = 0b00000010,
-    SLICE_9  = 0b00000100,
-    SLICE_3  = 0b00001000,
-    BLUR     = 0b00010000,
+    CENTER_X = 0x01,
+    CENTER_Y = 0x04,
+    SLICE_9  = 0x08,
+    SLICE_3  = 0x10,
+    BLUR     = 0x40,
+    WRAPPED  = 0x80,
 };
 
 enum Align : uint32_t

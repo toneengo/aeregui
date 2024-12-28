@@ -196,6 +196,7 @@ void main() {
 
     Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
     listrow->setSize({0, 32});
+    listrow->setFlags(WRAPPED);
     for (int i = 0; i < 15; i++)
     {
         Widget* item1 = listrow->addCol(new ListItem("lollipop", "", &selection[0]));
@@ -203,6 +204,11 @@ void main() {
     }
 
     uictx.addWidget(window2);
+
+    int lastSel = selection[Lollipop] ? Lollipop : Tennis;
+
+    Button lolbut( "lollipop time!!", [](){printf("lollipop:-)\n");} );
+    Button tenbut( "tenis", [](){printf("tenis:-(\n");} );
 
     while (!glfwWindowShouldClose(window))
     {
@@ -216,15 +222,17 @@ void main() {
 
         Widget* box1 = (*row2)[0];
 
-        Button but(selection[Lollipop] ? "lollipop time!!" : "tennis",
-                   selection[Lollipop] ? [](){ printf("lollipop :-)\n"); }
-                                       : [](){ printf("tenis :-(\n"); });
+        int sel = selection[Lollipop] ? Lollipop : Tennis;
+        if (sel != lastSel)
+        {
+            box1->clear();
 
-        box1->addChild(&but);
+            box1->addChild(sel == Lollipop ? &lolbut : &tenbut);
+            lastSel = selection[Lollipop] ? Lollipop : Tennis;
+        }
 
         uictx.render();
 
-        box1->clear();
         glfwSwapBuffers(window);
     }
     glfwTerminate();

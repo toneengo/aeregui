@@ -130,6 +130,7 @@ Widget* Widget::addChild(Widget* widget)
     m_children.push_back(widget);
     widget->m_parent = this;
     widget->m_bounds = fbox::pad(m_box, m_padding);
+    m_needs_update = true;
     return widget;
 }
 
