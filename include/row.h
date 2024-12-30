@@ -1,5 +1,6 @@
 #pragma once
 
+#include "defaults.h"
 #include "common.h"
 #include "widget.h"
 
@@ -14,7 +15,7 @@ public:
 
     template <typename... Cols>
     Row(Cols... columns)
-        : Widget()
+        : Widget(), m_spacing(Defaults::Row::Spacing)
     {
         (addCol(nullptr, columns), ...);
     }
@@ -26,6 +27,7 @@ protected:
     float m_height;
     float m_row_height;
     float m_last_height;
+    float m_spacing;
     
     Math::fvec2 m_col_pos;
     bool m_wrap;

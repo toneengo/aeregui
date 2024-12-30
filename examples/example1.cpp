@@ -195,7 +195,7 @@ void main() {
     (*row2)[1]->setFlags(0);
 
     Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
-    listrow->setSize({0, 32});
+    listrow->setSize({0, 48});
     listrow->setFlags(WRAPPED);
     for (int i = 0; i < 15; i++)
     {

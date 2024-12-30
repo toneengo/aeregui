@@ -46,12 +46,12 @@ void Row::draw(GLContext* ctx)
             if (m_render_flags & WRAPPED && currWidth + m_widths[i] > m_box.width)
             {
                 currWidth = 0;
-                currHeight += m_box.height;
+                currHeight += m_box.height + m_spacing;
             }
 
             m_children[i]->setPos({m_box.x + currWidth, m_box.y + currHeight});
             m_children[i]->setSize({float(m_widths[i]), m_box.height});
-            currWidth += m_widths[i];
+            currWidth += m_widths[i] + m_spacing;
         }
         m_height = m_render_flags & WRAPPED ? currHeight + m_box.height : m_box.height;
         m_needs_update = false;

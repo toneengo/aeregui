@@ -35,7 +35,7 @@ namespace TextInput {
 
 namespace ListItem {
     inline std::string Texture = "listitem";
-    inline Math::fvec4 Padding(12);
+    inline Math::fvec4 Padding(8);
 }
 
 namespace Box {
@@ -44,6 +44,7 @@ namespace Box {
 
 namespace Row {
     inline int Height = INHERIT;
+    inline int Spacing = 4;
 }
 
 NAMESPACE_END(Defaults);
