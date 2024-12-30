@@ -15,7 +15,7 @@ public:
     virtual void       draw(GLContext* ctx);
 
     inline void        setPos(Math::fvec2 pos) { m_box.pos = pos; };
-    inline void        setSize(Math::fvec2 size) {
+    inline virtual void        setSize(Math::fvec2 size) {
         m_box.size = size;
         if (size.x < 1) m_inherit.width = size.x == 0 ? 1 : size.x;
         else m_inherit.width = 0;
@@ -32,7 +32,7 @@ public:
     void    setPadding(float px) { m_padding = Math::fvec4(px); };
     Widget* addChild(Widget* widget);
     Widget* findWidget(Math::ivec2& pos);
-    bool    contains(const Math::fvec2& pos);
+    virtual bool    contains(const Math::fvec2& pos);
     bool    visible() { return m_visible; };
     void    assignTexture(std::string tex);
     void    setActiveChild(Widget* widget) { if (m_parent) m_parent->setActiveChild(widget); m_active_child = widget; };
