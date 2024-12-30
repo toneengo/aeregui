@@ -137,7 +137,7 @@ void TextInput::draw(GLContext* ctx)
         accumulator -= flashTime;
     }
 
-    Widget::draw(ctx);
+    //Widget::draw(ctx);
 
     ctx->drawTexture(m_box, m_texentry, m_state, m_pixel_size, SLICE_9);
 
@@ -157,9 +157,9 @@ void TextInput::draw(GLContext* ctx)
             fbox(
                 fmin(m_pos_buf[m_sel.x], m_pos_buf[m_sel.y]) +
                     m_box.x + m_offsetx + m_padding.left,
-                m_box.y,
+                m_box.y + m_padding.top,
                 abs(m_pos_buf[m_sel.x] - m_pos_buf[m_sel.y]),
-                abs(m_box.height)
+                abs(m_box.height - m_padding.top - m_padding.bottom)
             ),
             {115/255.0, 164/255.0, 194/255.0, 1.0}
         );
