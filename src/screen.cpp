@@ -15,7 +15,7 @@ void Screen::cursorPosCallback(double x, double y)
 {
     x *= m_window_scale;
     y *= m_window_scale;
-    if (m_drag_active)
+    if (m_drag_active && m_active_widget)
     {
         m_active_widget->onCursorPosEvent(x - m_active_widget_pos.x, y - m_active_widget_pos.y);
         return;

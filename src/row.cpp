@@ -41,7 +41,7 @@ void Row::draw(GLContext* ctx)
         for (int i = 0; i < m_children.size(); i++)
         {
             if (m_inherit_widths[i] > 0)
-                m_widths[i] = (m_box.width - m_absolute_width) * m_inherit_widths[i] / m_inherit_cols;
+                m_widths[i] = (m_box.width - m_absolute_width - m_spacing * (m_children.size() - 1)) * m_inherit_widths[i] / m_inherit_cols;
 
             if (m_render_flags & WRAPPED && currWidth + m_widths[i] > m_box.width)
             {
