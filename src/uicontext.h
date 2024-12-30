@@ -4,7 +4,7 @@
 #include "screen.h"
 #include <GLFW/glfw3.h>
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 // state/texture layer enum
 class UIContext
@@ -29,4 +29,4 @@ private:
     GLContext* m_gl_context;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

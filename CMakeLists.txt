@@ -12,9 +12,9 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project("aeregui")
+project("texgui")
 
-add_library(aeregui)
+add_library(texgui)
 add_executable(example1)
 
 find_package(OpenGL REQUIRED)
@@ -27,7 +27,7 @@ add_subdirectory(include/src)
 
 add_subdirectory(examples)
 
-foreach(TARGET aeregui example1)
+foreach(TARGET texgui example1)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT}")
 
     target_link_libraries(${TARGET} PRIVATE OpenGL::GL)
@@ -41,11 +41,11 @@ foreach(TARGET aeregui example1)
 endforeach(TARGET)
 
 target_link_directories(example1 PRIVATE ${CMAKE_BINARY_DIR})
-target_link_libraries(example1 PRIVATE aeregui)
+target_link_libraries(example1 PRIVATE texgui)
 
 add_custom_target(resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR}/resources
 )
 
-add_dependencies(example1 aeregui)
+add_dependencies(example1 texgui)
 add_dependencies(example1 resources)

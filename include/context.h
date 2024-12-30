@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class GLContext
 {
@@ -86,4 +86,4 @@ protected:
 
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

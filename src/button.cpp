@@ -2,10 +2,10 @@
 #include "button.h"
 #include "util.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
-Button::Button(const char* label, _AEREGUI_FN_PTR fn, int xpos, int ypos, int width, int height)
+Button::Button(const char* label, _TexGui_FN_PTR fn, int xpos, int ypos, int width, int height)
     : Widget(xpos, ypos, width, height),
       m_label(label), m_pressed_offset(Defaults::Button::POffset), m_function(fn)
 {

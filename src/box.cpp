@@ -1,7 +1,7 @@
 #include "defaults.h"
 #include "box.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 Box::Box(int x, int y, int width, int height)

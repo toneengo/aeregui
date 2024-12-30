@@ -4,7 +4,7 @@
 #include "math.h"
 #include <chrono>
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 // ##### Timekeeping stuff ##### // 
@@ -42,7 +42,7 @@ void TextInput::onMouseDownEvent(int button, int action)
         m_sel = {-1, -1};
 }
 
-extern std::unordered_map<char, AereGui::CharInfo> m_char_map;
+extern std::unordered_map<char, TexGui::CharInfo> m_char_map;
 inline void TextInput::eraseSelection()
 {
     float delWidth = 0;

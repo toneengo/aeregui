@@ -1,7 +1,7 @@
 #include "defaults.h"
 #include "listitem.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 extern std::unordered_map<std::string, TexEntry> m_tex_map;

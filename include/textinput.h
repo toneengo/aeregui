@@ -4,7 +4,7 @@
 #include "widget.h"
 #include <chrono>
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class TextInput : public Widget
 {
@@ -39,4 +39,4 @@ private:
     bool showTextCursor;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

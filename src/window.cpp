@@ -2,7 +2,7 @@
 #include "window.h"
 #include "util.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 Window::Window(const char* title, int xpos, int ypos, int width, int height)

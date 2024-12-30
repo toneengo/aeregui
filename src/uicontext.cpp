@@ -4,7 +4,7 @@
 
 #include "uicontext.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 void UIContext::render()

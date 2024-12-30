@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace AereGui
+namespace TexGui
 {
 
 inline const std::string VERSION_HEADER = R"#(

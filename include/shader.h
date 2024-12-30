@@ -3,7 +3,7 @@
 #include "common.h"
 #include <string>
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 struct uniformInfo
 { 
     char * key;
@@ -29,4 +29,4 @@ struct Shader
 };
 
 void createShader(Shader* shader, const std::string& vertexShader, const std::string& fragmentShader);
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

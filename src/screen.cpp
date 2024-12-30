@@ -1,6 +1,6 @@
 #include "screen.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 
 Screen::Screen(GLContext* gl_ctx)

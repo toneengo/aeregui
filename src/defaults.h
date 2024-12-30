@@ -3,7 +3,7 @@
 #include "common.h"
 #include "types.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 NAMESPACE_BEGIN(Defaults);
 
 inline int PixelSize  = 1;
@@ -53,4 +53,4 @@ namespace Column {
 }
 
 NAMESPACE_END(Defaults);
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

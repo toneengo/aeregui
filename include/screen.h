@@ -5,7 +5,7 @@
 #include "widget.h"
 #include "shader.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class Screen : public Widget
 {
@@ -31,4 +31,4 @@ private:
     bool m_drag_active = false;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

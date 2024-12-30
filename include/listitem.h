@@ -3,7 +3,7 @@
 #include "common.h"
 #include "widget.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 //image
 class ListItem : public Widget
@@ -23,4 +23,4 @@ protected:
     bool* m_binding;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

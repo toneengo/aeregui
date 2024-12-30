@@ -3,7 +3,7 @@
 #include "common.h"
 #include "widget.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class Box : public Widget
 {
@@ -14,4 +14,4 @@ public:
 protected:
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

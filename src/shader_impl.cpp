@@ -3,7 +3,7 @@
 #include "glad/gl.h"
 #include "shader.h"
 
-using namespace AereGui;
+using namespace TexGui;
 
 void Shader::use()
 {
@@ -15,7 +15,7 @@ uint32_t Shader::getLocation(const char * uniform_name)
     return shgets(uniforms, uniform_name).value.location;
 }
 
-void AereGui::createShader(Shader* shader, const std::string& vertexShader, const std::string& fragmentShader)
+void TexGui::createShader(Shader* shader, const std::string& vertexShader, const std::string& fragmentShader)
 {
     sh_new_arena(shader->uniforms);
 

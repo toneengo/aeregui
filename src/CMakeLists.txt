@@ -5,6 +5,6 @@ file(GLOB_RECURSE src_f CONFIGURE_DEPENDS
     "*.c"
 )
 
-target_sources(aeregui PRIVATE
+target_sources(texgui PRIVATE
     ${src_f}
 )

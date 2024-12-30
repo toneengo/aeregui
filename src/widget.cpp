@@ -2,7 +2,7 @@
 #include "widget.h"
 #include "util.h"
 
-using namespace AereGui;
+using namespace TexGui;
 using namespace Math;
 Widget::Widget(float xpos, float ypos, float width, float height)
     : m_visible(true),

@@ -4,13 +4,13 @@
 #include <vector>
 #include <stdint.h>
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 enum {
     INHERIT = 0
 };
 
-enum AereGui_flags : uint32_t
+enum TexGui_flags : uint32_t
 {
     CENTER_X = 0x01,
     CENTER_Y = 0x04,
@@ -31,7 +31,7 @@ enum Align : uint32_t
     ALIGN_BOTTOM,
 };
 
-enum AereGui_state : uint8_t 
+enum TexGui_state : uint8_t 
 {
     STATE_NONE   = 0b00000001,
     STATE_ACTIVE = 0b00000010,
@@ -507,4 +507,4 @@ struct RenderData {
     std::vector<Character> text;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

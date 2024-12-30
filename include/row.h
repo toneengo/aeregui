@@ -4,7 +4,7 @@
 #include "common.h"
 #include "widget.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class Row : public Widget
 {
@@ -33,4 +33,4 @@ private:
     float m_inherit_cols = 0;
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);

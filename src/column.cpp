@@ -1,6 +1,6 @@
 #include "column.h"
 
-using namespace AereGui;
+using namespace TexGui;
 
 Widget* Column::addRow(Widget* widget, float size)
 {

@@ -5,7 +5,7 @@
 #include "context.h"
 #include "stdio.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class Widget
 {

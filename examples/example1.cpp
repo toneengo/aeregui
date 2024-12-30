@@ -1,4 +1,4 @@
-#include "aeregui.h"
+#include "texgui.h"
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
 #include "stdio.h"
@@ -6,7 +6,7 @@
 #include "stb_image.h"
 
 GLFWwindow* window;
-using namespace AereGui;
+using namespace TexGui;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -39,7 +39,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create window 
-    window = glfwCreateWindow(800, 600, "aeregui example 1", nullptr, nullptr);
+    window = glfwCreateWindow(800, 600, "TexGui example 1", nullptr, nullptr);
 
     // Load OpenGL
     glfwMakeContextCurrent(window);
@@ -125,7 +125,7 @@ void main() {
     glDeleteShader(vsh); glDeleteShader(fsh);
 
     // ************** ALL GUI STUFF ****************
-    AereGui::Defaults::PixelSize = 2;
+    TexGui::Defaults::PixelSize = 2;
 
     UIContext uictx(window);
     uictx.loadFont("resources/fonts/unifont.ttf");

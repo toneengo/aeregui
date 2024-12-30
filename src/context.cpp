@@ -7,7 +7,7 @@
 #include <filesystem>
 
 #include <glm/gtc/type_ptr.hpp>
-#include "shaders/aeregui_shaders.hpp"
+#include "shaders/texgui_shaders.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -20,11 +20,11 @@
 
 #include <iostream>
 
-using namespace AereGui;
-using namespace AereGui::Math;
+using namespace TexGui;
+using namespace TexGui::Math;
 
 constexpr int ATLAS_SIZE = 512;
-std::unordered_map<char, AereGui::CharInfo> m_char_map;
+std::unordered_map<char, TexGui::CharInfo> m_char_map;
 
 GLContext::GLContext(GLFWwindow* window)
     : fontPx(0.0)
@@ -303,7 +303,7 @@ int tc(int x, int y)
 }
 
 //#TODO: remove ATLAS_SIZE, determine width and height
-std::unordered_map<std::string, AereGui::TexEntry> m_tex_map;
+std::unordered_map<std::string, TexGui::TexEntry> m_tex_map;
 void GLContext::preloadTextures(const char* dir)
 {
     std::vector<std::filesystem::directory_entry> files;

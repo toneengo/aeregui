@@ -3,7 +3,7 @@
 #include "common.h"
 #include "widget.h"
 
-NAMESPACE_BEGIN(AereGui);
+NAMESPACE_BEGIN(TexGui);
 
 class GridList : public Widget
 {
@@ -16,4 +16,4 @@ protected:
 
 };
 
-NAMESPACE_END(AereGui);
+NAMESPACE_END(TexGui);
