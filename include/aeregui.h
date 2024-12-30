@@ -9,6 +9,7 @@
 #include "textinput.h"
 #include "window.h"
 #include "row.h"
+#include "column.h"
 #include "listitem.h"
 #include "box.h"
 

@@ -195,7 +195,7 @@ void main() {
     (*row2)[1]->setFlags(0);
 
     Row* listrow = (Row*)(*row2)[1]->addChild(new Row());
-    listrow->setSize({0, 48});
+    listrow->setSize({0, 40});
     listrow->setFlags(WRAPPED);
     for (int i = 0; i < 15; i++)
     {
@@ -209,6 +209,10 @@ void main() {
 
     Button lolbut( "lollipop time!!", [](){printf("lollipop:-)\n");} );
     Button tenbut( "tenis", [](){printf("tenis:-(\n");} );
+    Column col = Column();
+
+    Widget* box1 = (*row2)[0];
+    box1->addChild(&col);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -220,14 +224,13 @@ void main() {
         glBindTextureUnit(0, bg);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        Widget* box1 = (*row2)[0];
 
         int sel = selection[Lollipop] ? Lollipop : Tennis;
         if (sel != lastSel)
         {
-            box1->clear();
-
-            box1->addChild(sel == Lollipop ? &lolbut : &tenbut);
+            col.clear();
+            col.addRow(sel == Lollipop ? &lolbut : &tenbut);
+            col.addRow(sel == Lollipop ? &tenbut : &lolbut);
             lastSel = selection[Lollipop] ? Lollipop : Tennis;
         }
 

@@ -10,6 +10,7 @@ NAMESPACE_BEGIN(AereGui);
 class Widget
 {
 friend class Row;
+friend class Column;
 public:
     Widget(float xpos = 0, float ypos = 0, float width = 0, float height = 0);
     virtual void       draw(GLContext* ctx);
@@ -36,7 +37,7 @@ public:
     bool    visible() { return m_visible; };
     void    assignTexture(std::string tex);
     void    setActiveChild(Widget* widget) { if (m_parent) m_parent->setActiveChild(widget); m_active_child = widget; };
-    void    clear() { m_children.clear(); }
+    virtual void    clear() { m_children.clear(); m_needs_update = true; }
 
     virtual void onFrameResizeEvent(int button, int action) {};
     virtual void onMouseDownEvent(int button, int action);

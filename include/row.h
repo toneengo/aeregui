@@ -12,6 +12,7 @@ class Row : public Widget
 public:
     Widget* addCol(Widget* widget, float size = 0);
     bool contains(const Math::fvec2& pos) override;
+    void clear() override;
 
     template <typename... Cols>
     Row(Cols... columns)
@@ -25,12 +26,7 @@ protected:
     std::vector<double> m_widths;
     std::vector<double> m_inherit_widths;
     float m_height;
-    float m_row_height;
-    float m_last_height;
     float m_spacing;
-    
-    Math::fvec2 m_col_pos;
-    bool m_wrap;
 
 private:
     float m_absolute_width = 0;

@@ -31,9 +31,17 @@ bool Row::contains(const Math::fvec2& pos)
            d.y <= m_height && d.y >= 0.f;
 }
 
+void Row::clear()
+{
+    Widget::clear();
+    m_widths.clear();
+    m_inherit_widths.clear();
+    m_absolute_width = 0;
+    m_inherit_cols = 0;
+}
+
 void Row::draw(GLContext* ctx)
 {
-    Widget::draw(ctx);
     if (m_parent && m_parent->m_needs_update)
     {
         float currWidth = 0;
@@ -56,4 +64,6 @@ void Row::draw(GLContext* ctx)
         m_height = m_render_flags & WRAPPED ? currHeight + m_box.height : m_box.height;
         m_needs_update = false;
     }
+
+    Widget::draw(ctx);
 }
