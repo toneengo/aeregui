@@ -4,15 +4,16 @@ using namespace TexGui;
 
 Widget* Column::addRow(Widget* widget, float size)
 {
-    if (size == 0 && widget && widget->m_inherit.height == 0)
+    if (size == -1 && widget && widget->m_inherit.height == 0)
+    {
         size = widget->m_box.height;
+    }
 
     m_children.push_back(widget);
     m_heights.push_back(size);
     if (size < 1) 
     {
         m_inherit_heights.push_back(size == 0 ? 1 : size);
-        m_inherit_rows++;
     }
     else
     {
@@ -21,6 +22,8 @@ Widget* Column::addRow(Widget* widget, float size)
     }
 
     m_needs_update = true;
+    if (m_parent)
+        m_parent->m_needs_update = true;
     return widget;
 }
 
@@ -37,33 +40,40 @@ void Column::clear()
     m_heights.clear();
     m_inherit_heights.clear();
     m_absolute_height = 0;
-    m_inherit_rows = 0;
+
+    //#TODO: this SUCKS!!!!!
+    if (m_parent)
+        m_parent->m_needs_update = true;
+}
+
+void Column::update()
+{
+    Widget::update();
+
+    float currWidth = 0;
+    float currHeight = 0;
+    for (int i = 0; i < m_children.size(); i++)
+    {
+        if (m_inherit_heights[i] > 0)
+            m_heights[i] = (m_box.height - m_absolute_height - m_spacing * (m_children.size() - 1)) * m_inherit_heights[i] / m_inherit_heights.size();
+
+        if (m_render_flags & WRAPPED && currWidth + m_heights[i] > m_box.width)
+        {
+            currWidth += m_box.width + m_spacing;
+            currHeight = 0;
+        }
+
+        if (m_children[i] != nullptr)
+        {
+            m_children[i]->setPos({m_box.x + currWidth, m_box.y + currHeight});
+            m_children[i]->setSize({m_box.width, float(m_heights[i])});
+        }
+        currHeight += m_heights[i] + m_spacing;
+    }
+    m_width = m_render_flags & WRAPPED ? currWidth + m_box.width : m_box.width;
 }
 
 void Column::draw(GLContext* ctx)
 {
-    if (m_parent && m_parent->m_needs_update)
-    {
-        float currWidth = 0;
-        float currHeight = 0;
-        for (int i = 0; i < m_children.size(); i++)
-        {
-            if (m_inherit_heights[i] > 0)
-                m_heights[i] = (m_box.height - m_absolute_height - m_spacing * (m_children.size() - 1)) * m_inherit_heights[i] / m_inherit_rows;
-
-            if (m_render_flags & WRAPPED && currWidth + m_heights[i] > m_box.width)
-            {
-                currWidth += m_box.width + m_spacing;
-                currHeight = 0;
-            }
-
-            m_children[i]->setPos({m_box.x + currWidth, m_box.y + currHeight});
-            m_children[i]->setSize({m_box.width, float(m_heights[i])});
-            currHeight += m_heights[i] + m_spacing;
-        }
-        m_width = m_render_flags & WRAPPED ? currWidth + m_box.width : m_box.width;
-        m_needs_update = false;
-    }
-
     Widget::draw(ctx);
 }

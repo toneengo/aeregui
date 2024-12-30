@@ -21,6 +21,7 @@ public:
         (addRow(nullptr, rows), ...);
     }
     virtual void draw(GLContext* ctx) override;
+    virtual void update() override;
 
 protected:
     std::vector<double> m_heights;
@@ -30,7 +31,6 @@ protected:
 
 private:
     float m_absolute_height = 0;
-    float m_inherit_rows = 0;
 };
 
 NAMESPACE_END(TexGui);

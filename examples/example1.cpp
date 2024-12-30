@@ -134,38 +134,19 @@ void main() {
     screen = uictx.screenPtr();
 
     glfwSetFramebufferSizeCallback(window,
-        [](GLFWwindow* window, int width, int height)
-        {
-            screen->framebufferSizeCallback(width, height);
-        }
+        [](GLFWwindow* window, int width, int height) { screen->framebufferSizeCallback(width, height); }
     );
-
     glfwSetCursorPosCallback(window,
-        [](GLFWwindow* window, double x, double y)
-        {
-            screen->cursorPosCallback(x, y);
-        }
+        [](GLFWwindow* window, double x, double y) { screen->cursorPosCallback(x, y); }
     );
-
     glfwSetMouseButtonCallback(window,
-        [](GLFWwindow* window, int button, int action, int mods)
-        {
-            screen->mouseButtonCallback(button, action);
-        }
+        [](GLFWwindow* window, int button, int action, int mods) { screen->mouseButtonCallback(button, action); }
     );
-
     glfwSetKeyCallback(window,
-        [](GLFWwindow* window, int key, int scancode, int action, int mods)
-        {
-            screen->keyCallback(key, scancode, action, mods);
-        }
+        [](GLFWwindow* window, int key, int scancode, int action, int mods) { screen->keyCallback(key, scancode, action, mods); }
     );
-
     glfwSetCharCallback(window,
-        [](GLFWwindow* window, unsigned int codepoint)
-        {
-            screen->charCallback(codepoint);
-        }
+        [](GLFWwindow* window, unsigned int codepoint) { screen->charCallback(codepoint); }
     );
 
     //floating text input box
@@ -199,8 +180,8 @@ void main() {
     listrow->setFlags(WRAPPED);
     for (int i = 0; i < 15; i++)
     {
-        Widget* item1 = listrow->addCol(new ListItem("lollipop", "", &selection[0]));
-        Widget* item2 = listrow->addCol(new ListItem("tennis", "", &selection[1]));
+        Widget* item1 = listrow->addCol(new ListItem("lollipop", "", &selection[0]), -1);
+        Widget* item2 = listrow->addCol(new ListItem("tennis", "", &selection[1]), -1);
     }
 
     uictx.addWidget(window2);

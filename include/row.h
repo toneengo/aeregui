@@ -21,6 +21,7 @@ public:
         (addCol(nullptr, columns), ...);
     }
     virtual void draw(GLContext* ctx) override;
+    virtual void update() override;
 
 protected:
     std::vector<double> m_widths;

@@ -3,6 +3,7 @@
 #include "util.h"
 
 using namespace TexGui;
+
 using namespace Math;
 Widget::Widget(float xpos, float ypos, float width, float height)
     : m_visible(true),
@@ -10,7 +11,7 @@ Widget::Widget(float xpos, float ypos, float width, float height)
       m_text_color(Defaults::Font::Color),
       m_text_scale(Defaults::Font::Scale), m_render_flags(Defaults::Flags),
       m_pixel_size(Defaults::PixelSize),
-      m_state(STATE_NONE)
+      m_state(STATE_NONE), m_needs_update(true)
 {
     //#TODO: do xpos and ypos percetanges too
     if (width < 1)
@@ -73,25 +74,25 @@ void Widget::onMouseDownEvent(int button, int action)
     }
 }
 
+void Widget::update()
+{
+    if (m_parent) {
+        m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
+        m_bounds.pos = fvec2(m_parent->m_padding.left, m_parent->m_padding.top);
+    }
+
+    if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
+    if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
+
+    m_needs_update = true;
+}
+
 void Widget::draw(GLContext* ctx)
 {
     if (!m_visible) return;
 
-    //if (m_inherit.x  > 0) m_box.x = m_bounds.x + m_bounds.width  * m_inherit.x;
-    //if (m_inherit.y  > 0) m_box.y = m_bounds.y + m_bounds.height * m_inherit.y;
-
     if (m_parent && m_parent->m_needs_update)
-    {
-        if (m_parent) {
-            m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
-            m_bounds.pos = fvec2(m_parent->m_padding.left, m_parent->m_padding.top);
-        }
-
-        if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
-        if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
-
-        m_needs_update = true;
-    }
+        update();
 
     ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + fvec2(m_padding.left, m_padding.top));
     for (auto& w : m_children)
