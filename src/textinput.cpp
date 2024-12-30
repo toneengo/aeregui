@@ -19,6 +19,7 @@ TextInput::TextInput(const char* placeholder, int x, int y, int width, int heigh
       m_pos_buf(1, 0), m_text_cur(0), showTextCursor(true), accumulator(0),
       m_sel(-1, -1)
 {
+    m_padding = Defaults::TextInput::Padding;
     assignTexture(Defaults::TextInput::Texture);
 }
 
@@ -155,7 +156,7 @@ void TextInput::draw(GLContext* ctx)
         ctx->drawQuad(
             fbox(
                 fmin(m_pos_buf[m_sel.x], m_pos_buf[m_sel.y]) +
-                    m_box.x + m_offsetx,
+                    m_box.x + m_offsetx + m_padding.left,
                 m_box.y,
                 abs(m_pos_buf[m_sel.x] - m_pos_buf[m_sel.y]),
                 abs(m_box.height)
@@ -167,7 +168,7 @@ void TextInput::draw(GLContext* ctx)
     ctx->drawText(
         !getFlagBit(m_state, STATE_ACTIVE) && m_text_buf.size() == 0
         ? m_placeholder.c_str() : m_text_buf.c_str(),
-        {m_box.x + m_offsetx, m_box.y + m_box.height / 2},
+        {m_box.x + m_offsetx + m_padding.left, m_box.y + m_box.height / 2},
         m_text_color,
         m_text_scale,
         CENTER_Y
@@ -176,7 +177,7 @@ void TextInput::draw(GLContext* ctx)
     if (showTextCursor && getFlagBit(m_state, STATE_ACTIVE))
     {
         ctx->drawText("|",
-            {m_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx, m_box.y + m_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
+            {m_box.x + m_pos_buf[m_text_cur] - 5 + m_offsetx + m_padding.left, m_box.y + m_box.height / 2}, m_text_color, m_text_scale, CENTER_Y);
     }
 
     /*

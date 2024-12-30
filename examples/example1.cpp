@@ -177,7 +177,7 @@ void main() {
     Widget* button = new Button("yes", [](){printf("sent lololo\n");});
     Widget* input = new TextInput("Enter text:");
 
-    Widget* row1 = window1->addChild(new Row(50, 0, 0));
+    Widget* row1 = window1->addChild(new Row(70, 0, 0));
     (*row1)[0] = sendbutton;
     (*row1)[1] = input;
     (*row1)[2] = button;

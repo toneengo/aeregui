@@ -30,7 +30,7 @@ namespace Button {
 
 namespace TextInput {
     inline std::string Texture = "textinput";
-    inline Math::fvec4 Padding(12);
+    inline Math::fvec4 Padding(8);
 }
 
 namespace ListItem {

@@ -93,14 +93,14 @@ void Widget::draw(GLContext* ctx)
         m_needs_update = true;
     }
 
-    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + m_bounds.pos);
+    ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + fvec2(m_padding.left, m_padding.top));
     for (auto& w : m_children)
     {
         if (w == nullptr) continue;
         if (w->m_visible)
             w->draw(ctx);
     }
-    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos - m_bounds.pos);
+    ctx->setWidgetPos(ctx->m_widget_pos - m_box.pos - fvec2(m_padding.left, m_padding.top));
     m_needs_update = false;
 }
 
