@@ -1,5 +1,5 @@
 WIP.
-aeregui is a minimal C++ library, which can use textures to render GUI elements for OpenGL games.
+texgui is a minimal C++ library, which can use textures to render GUI elements for OpenGL games.
 inspired by: nanogui, imgui
 
 # Build
@@ -22,8 +22,8 @@ $ vcpkg install glm
 ```
 5. Clone this repository.
 ```
-$ git clone https://github.com/toneengo/aeregui.git
-$ cd .\aeregui\
+$ git clone https://github.com/toneengo/texgui.git
+$ cd .\texgui\
 ```
 6. Generate the build files. You may use another generator.
 ```
@@ -31,7 +31,7 @@ $ mkdir build
 $ cmake -S . -B build -G "Ninja"
 $ cmake --build build
 ```
-7. Copy the output file (build\aeregui.lib) into your project, and link it.
+7. Copy the output file (build\texgui.lib) into your project, and link it.
 ## Linux (CMake)
 1. Install the dependencies with your package manager.
 ### Arch Linux:
@@ -40,8 +40,8 @@ sudo pacman -S glm
 ```
 2. Clone this repository.
 ```
-$ git clone https://github.com/toneengo/aeregui.git
-$ cd .\aeregui\
+$ git clone https://github.com/toneengo/texgui.git
+$ cd .\texgui\
 ```
 3. Generate the build files. You may use another generator.
 ```
@@ -49,4 +49,4 @@ $ mkdir build
 $ cmake -S . -B build -G "Ninja"
 $ cmake --build build
 ```
-4. Copy the output file (build\aeregui.lib) into your project, and link it.
+4. Copy the output file (build\texgui.lib) into your project, and link it.
