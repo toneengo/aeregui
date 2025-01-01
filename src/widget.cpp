@@ -76,28 +76,28 @@ void Widget::onMouseDownEvent(int button, int action)
 
 void Widget::update()
 {
-    if (m_parent) {
-        m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
-        m_bounds.pos = fvec2(m_parent->m_padding.left, m_parent->m_padding.top);
-    }
-
     if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
     if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
-
-    m_needs_update = true;
 }
 
 void Widget::draw(GLContext* ctx)
 {
     if (!m_visible) return;
 
-    if (m_parent && m_parent->m_needs_update)
+    if (m_needs_update)
         update();
 
     ctx->setWidgetPos(ctx->m_widget_pos + m_box.pos + fvec2(m_padding.left, m_padding.top));
     for (auto& w : m_children)
     {
         if (w == nullptr) continue;
+
+        if (m_needs_update)
+        {
+            w->m_bounds = fbox::pad(m_box, m_padding);
+            w->m_bounds.pos = fvec2(m_padding.left, m_padding.top);
+            w->m_needs_update = true;
+        }
         if (w->m_visible)
             w->draw(ctx);
     }

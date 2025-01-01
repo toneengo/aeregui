@@ -190,6 +190,9 @@ void main() {
 
     Button lolbut( "lollipop time!!", [](){printf("lollipop:-)\n");} );
     Button tenbut( "tenis", [](){printf("tenis:-(\n");} );
+
+    Image lolimg("lollipop");
+    Image tenimg("tennis");
     Column col = Column();
 
     Widget* box1 = (*row2)[0];
@@ -210,8 +213,8 @@ void main() {
         if (sel != lastSel)
         {
             col.clear();
+            col.addRow(sel == Lollipop ? &lolimg : &tenimg, -1);
             col.addRow(sel == Lollipop ? &lolbut : &tenbut);
-            col.addRow(sel == Lollipop ? &tenbut : &lolbut);
             lastSel = selection[Lollipop] ? Lollipop : Tennis;
         }
 

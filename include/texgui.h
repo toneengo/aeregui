@@ -12,5 +12,6 @@
 #include "column.h"
 #include "listitem.h"
 #include "box.h"
+#include "image.h"
 
 #include "uicontext.h"

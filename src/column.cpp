@@ -22,8 +22,6 @@ Widget* Column::addRow(Widget* widget, float size)
     }
 
     m_needs_update = true;
-    if (m_parent)
-        m_parent->m_needs_update = true;
     return widget;
 }
 
@@ -40,10 +38,6 @@ void Column::clear()
     m_heights.clear();
     m_inherit_heights.clear();
     m_absolute_height = 0;
-
-    //#TODO: this SUCKS!!!!!
-    if (m_parent)
-        m_parent->m_needs_update = true;
 }
 
 void Column::update()
