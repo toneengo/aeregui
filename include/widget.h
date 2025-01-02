@@ -73,6 +73,7 @@ protected:
     unsigned int m_render_flags;
     unsigned int m_state;
 
+    bool m_inherit_bounds = true;
     bool m_visible;
 
     bool m_needs_update = true;

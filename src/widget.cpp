@@ -13,16 +13,21 @@ Widget::Widget(float xpos, float ypos, float width, float height)
       m_pixel_size(Defaults::PixelSize),
       m_state(STATE_NONE), m_needs_update(true)
 {
-    //#TODO: do xpos and ypos percetanges too
+    if (xpos < 1)
+        m_inherit.x = xpos;
+    else
+        m_inherit.x = -1;
+
+    if (ypos < 1)
+        m_inherit.y = ypos;
+    else
+        m_inherit.y = -1;
+
     if (width < 1)
-    {
         m_inherit.width = width == 0 ? 1 : width;
-    }
 
     if (height < 1)
-    {
         m_inherit.height = height == 0 ? 1 : height;
-    }
 }
 
 void Widget::onCursorPosEvent(int x, int y)
@@ -76,8 +81,16 @@ void Widget::onMouseDownEvent(int button, int action)
 
 void Widget::update()
 {
+    if (m_parent && m_inherit_bounds) {
+        m_bounds = fbox::pad(m_parent->m_box, m_parent->m_padding);
+        m_bounds.pos = fvec2(0);
+    }
+
     if (m_inherit.width  > 0) m_box.width  = m_bounds.width  * m_inherit.width;
     if (m_inherit.height > 0) m_box.height = m_bounds.height * m_inherit.height;
+
+    if (m_inherit.x != -1) m_box.x = m_bounds.x + m_bounds.width * m_inherit.x;
+    if (m_inherit.y != -1) m_box.y = m_bounds.y + m_bounds.width * m_inherit.y;
 }
 
 void Widget::draw(GLContext* ctx)
@@ -93,11 +106,8 @@ void Widget::draw(GLContext* ctx)
         if (w == nullptr) continue;
 
         if (m_needs_update)
-        {
-            w->m_bounds = fbox::pad(m_box, m_padding);
-            w->m_bounds.pos = fvec2(m_padding.left, m_padding.top);
             w->m_needs_update = true;
-        }
+
         if (w->m_visible)
             w->draw(ctx);
     }

@@ -1,18 +1,18 @@
 #include "column.h"
 
 using namespace TexGui;
+using namespace Math;
 
 Widget* Column::addRow(Widget* widget, float size)
 {
     if (size == -1 && widget && widget->m_inherit.height == 0)
-    {
         size = widget->m_box.height;
-    }
 
     m_children.push_back(widget);
     m_heights.push_back(size);
     if (size < 1) 
     {
+        m_inherit_rows++;
         m_inherit_heights.push_back(size == 0 ? 1 : size);
     }
     else
@@ -38,6 +38,7 @@ void Column::clear()
     m_heights.clear();
     m_inherit_heights.clear();
     m_absolute_height = 0;
+    m_inherit_rows = 0;
 }
 
 void Column::update()
@@ -49,7 +50,7 @@ void Column::update()
     for (int i = 0; i < m_children.size(); i++)
     {
         if (m_inherit_heights[i] > 0)
-            m_heights[i] = (m_box.height - m_absolute_height - m_spacing * (m_children.size() - 1)) * m_inherit_heights[i] / m_inherit_heights.size();
+            m_heights[i] = (m_box.height - m_absolute_height - m_spacing * (m_children.size() - 1)) * m_inherit_heights[i] / m_inherit_rows;
 
         if (m_render_flags & WRAPPED && currWidth + m_heights[i] > m_box.width)
         {
@@ -59,8 +60,8 @@ void Column::update()
 
         if (m_children[i] != nullptr)
         {
-            m_children[i]->setPos({m_box.x + currWidth, m_box.y + currHeight});
-            m_children[i]->setSize({m_box.width, float(m_heights[i])});
+            m_children[i]->m_inherit_bounds = false;
+            m_children[i]->m_bounds = fbox(currWidth, currHeight, m_box.width, float(m_heights[i]));
         }
         currHeight += m_heights[i] + m_spacing;
     }

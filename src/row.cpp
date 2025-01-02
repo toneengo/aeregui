@@ -1,6 +1,7 @@
 #include "row.h"
 
 using namespace TexGui;
+using namespace Math;
 
 Widget* Row::addCol(Widget* widget, float size)
 {
@@ -11,8 +12,8 @@ Widget* Row::addCol(Widget* widget, float size)
     m_widths.push_back(size);
     if (size < 1) 
     {
-        m_inherit_widths.push_back(size == 0 ? 1 : size);
         m_inherit_cols++;
+        m_inherit_widths.push_back(size == 0 ? 1 : size);
     }
     else
     {
@@ -59,15 +60,14 @@ void Row::update()
 
         if (m_children[i] != nullptr)
         {
-            m_children[i]->setPos({m_box.x + currWidth, m_box.y + currHeight});
-            m_children[i]->setSize({float(m_widths[i]), m_box.height});
+            m_children[i]->m_inherit_bounds = false;
+            m_children[i]->m_bounds = fbox(currWidth, currHeight, float(m_widths[i]), m_box.height);
         }
 
         currWidth += m_widths[i] + m_spacing;
     }
 
     m_height = m_render_flags & WRAPPED ? currHeight + m_box.height : m_box.height;
-
 }
 
 void Row::draw(GLContext* ctx)

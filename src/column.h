@@ -31,6 +31,7 @@ protected:
 
 private:
     float m_absolute_height = 0;
+    float m_inherit_rows = 0;
 };
 
 NAMESPACE_END(TexGui);

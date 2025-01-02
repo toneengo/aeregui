@@ -208,7 +208,6 @@ void main() {
         glBindTextureUnit(0, bg);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-
         int sel = selection[Lollipop] ? Lollipop : Tennis;
         if (sel != lastSel)
         {
