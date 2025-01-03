@@ -137,7 +137,7 @@ void TextInput::draw(GLContext* ctx)
         accumulator -= flashTime;
     }
 
-    //Widget::draw(ctx);
+    Widget::draw(ctx);
 
     ctx->drawTexture(m_box, m_texentry, m_state, m_pixel_size, SLICE_9);
 

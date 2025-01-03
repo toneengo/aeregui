@@ -35,6 +35,7 @@ void ListItem::onMouseDownEvent(int button, int action)
 
 void ListItem::draw(GLContext* ctx)
 {
+    Widget::draw(ctx);
     int state = m_state & STATE_ACTIVE ? STATE_ACTIVE : m_state;
     ctx->drawTexture(fbox::pad(m_box, m_padding), m_image_texentry, state, m_pixel_size, 0);
     ctx->drawTexture(m_box, m_texentry, state, m_pixel_size, SLICE_9);
